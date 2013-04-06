@@ -14,8 +14,7 @@ public class OutputCollecter<K, V> {
 	public void printOutput() {
 		for (int i = 0; i < records.size(); i++) {
 			Record<K, V> curRecord = records.get(i);
-			System.out.println("<" + curRecord.getKey() + ", " + 
-					curRecord.getValue() + ">");
+			System.out.println("<" + curRecord.key + ", " + curRecord.value + ">");
 		}
 	}
 }
