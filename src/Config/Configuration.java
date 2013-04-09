@@ -1,6 +1,6 @@
 package Config;
 
-import java.io.File;
+import Interfaces.InputFormat440;
 
 public interface Configuration {
 	
@@ -10,8 +10,8 @@ public interface Configuration {
 	public Class<?> getCombinerClass();
 	public Class<?> getReducerClass();
 	
-	public File getInputFile();
-	public File getOutputFile();
+	public String getInputFilePath();
+	public String getOutputFilePath();
 	
 	public int getNumOfMappers();
 	public int getNumOfReducers();
