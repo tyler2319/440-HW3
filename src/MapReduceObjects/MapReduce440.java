@@ -44,8 +44,7 @@ public class MapReduce440 {
 
 		if (com.equals("start") && args.length == 1) {
 			Configuration config = getConfig(args[0]);
-			JobRunner440 jr = new JobRunner440(config);
-			jr.printInput();
+			System.out.println(config.getMapperClass() + " " + config.getReducerClass());
 		} else if (com.equals("monitor") && words.length == 1) {
 			//MONITOR CODE
 		} else if (com.equals("stop") && words.length == 1) {

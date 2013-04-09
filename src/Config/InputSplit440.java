@@ -1,4 +1,4 @@
-package Interfaces;
+package Config;
 
 public interface InputSplit440 {
 

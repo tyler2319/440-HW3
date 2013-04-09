@@ -1,7 +1,6 @@
-package Interfaces;
+package Config;
 
 public interface RecordReader440<key, value> {
-	
 	public void close();
 	public key createKey();
 	public value createValue();
