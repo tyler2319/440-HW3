@@ -2,6 +2,11 @@ package MapReduceObjects;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
+import ClassLoader.ClassLoader440;
+import Config.Configuration;
 
 public class MapReduce440 {
 	
@@ -37,8 +42,9 @@ public class MapReduce440 {
 			args[i-1] = words[i];
 		}
 
-		if (com.equals("start")) {
-			//START CODE
+		if (com.equals("start") && args.length == 1) {
+			Configuration config = getConfig(args[0]);
+			System.out.println(config.getMapperClass() + " " + config.getReducerClass());
 		} else if (com.equals("monitor") && words.length == 1) {
 			//MONITOR CODE
 		} else if (com.equals("stop") && words.length == 1) {
@@ -47,5 +53,40 @@ public class MapReduce440 {
 			System.out.println("Command not " + com + " recognized.");
 		}
 	}
-
+	
+	public Configuration getConfig(String path) {
+		String[] parts = path.split("/");
+		String[] fileParts = parts[parts.length - 1].split("\\.");
+		
+		if (fileParts.length != 2 || !fileParts[1].equals("class")) {
+			System.out.println("Configuration file must be a valid Java class");
+			return null;
+		}
+		
+		ClassLoader440 cl = new ClassLoader440();
+		Class<?> configClass = cl.getClass(path, fileParts[0]);
+		Constructor<?> configConst = null;
+		try {
+			configConst = configClass.getConstructor();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+		
+		Configuration config = null;
+		try {
+			config = (Configuration)configConst.newInstance();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		
+		return config;
+	}
 }

@@ -2,7 +2,7 @@ package Config;
 
 import java.io.File;
 
-public interface Configuration<key, value> {
+public interface Configuration {
 	
 	public String getJobName();
 	
@@ -16,5 +16,5 @@ public interface Configuration<key, value> {
 	public int getNumOfMappers();
 	public int getNumOfReducers();
 	
-	public InputFormat440<key, value> getInputValue();
+	public InputFormat440<?, ?> getInputValue();
 }
