@@ -1,7 +1,9 @@
 package Interfaces;
 
+import java.nio.file.Path;
+
 public interface InputSplit440 {
 
-		public long getLength();
-		public String[] getLocations();
+	public int getLength();
+	public Path getPath();
 }

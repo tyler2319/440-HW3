@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import ClassLoader.ClassLoader440;
 import Config.Configuration;
+import Interfaces.InputSplit440;
 
 public class MapReduce440 {
 	
@@ -46,6 +47,7 @@ public class MapReduce440 {
 			Configuration config = getConfig(args[0]);
 			JobRunner440 jr = new JobRunner440(config);
 			jr.printInput();
+			InputSplit440[] splits = jr.getSplits();
 		} else if (com.equals("monitor") && words.length == 1) {
 			//MONITOR CODE
 		} else if (com.equals("stop") && words.length == 1) {

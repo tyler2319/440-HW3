@@ -35,7 +35,7 @@ public class WordcountConfig implements Configuration {
 		return 1;
 	}
 	
-	public InputFormat440<?, ?> getInputValue() {
-		return null;
+	public Class<?> getInputFormat() {
+		return TextInputFormat440.class;
 	}
 }

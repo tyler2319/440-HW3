@@ -1,7 +1,5 @@
 package Config;
 
-import Interfaces.InputFormat440;
-
 public interface Configuration {
 	
 	public String getJobName();
@@ -16,5 +14,5 @@ public interface Configuration {
 	public int getNumOfMappers();
 	public int getNumOfReducers();
 	
-	public InputFormat440<?, ?> getInputValue();
+	public Class<?> getInputFormat();
 }
