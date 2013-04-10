@@ -1,7 +1,5 @@
-import java.io.File;
-
 import Config.Configuration;
-import Config.InputFormat440;
+import Interfaces.InputFormat440;
 
 public class WordcountConfig implements Configuration {
 
@@ -21,12 +19,12 @@ public class WordcountConfig implements Configuration {
 		return WordcountReduce.class;
 	}
 
-	public File getInputFile() {
-		return null;
+	public String getInputFilePath() {
+		return "/Users/Tyler/Documents/workspace/440-HW3/src/WordcountText.txt";
 	}
 
-	public File getOutputFile() {
-		return null;
+	public String getOutputFilePath() {
+		return "/Users/Tyler/Documents/workspace/440-HW3/src/WordcountOutput.txt";
 	}
 
 	public int getNumOfMappers() {
@@ -36,8 +34,7 @@ public class WordcountConfig implements Configuration {
 	public int getNumOfReducers() {
 		return 1;
 	}
-
-	@Override
+	
 	public InputFormat440<?, ?> getInputValue() {
 		return null;
 	}
