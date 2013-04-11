@@ -3,6 +3,7 @@ package MapReduceObjects;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -11,6 +12,7 @@ import java.util.List;
 import Config.Configuration;
 import Interfaces.InputFormat440;
 import Interfaces.InputSplit440;
+import Interfaces.Mapper;
 import Interfaces.RecordReader440;
 
 public class JobRunner440 {
@@ -50,6 +52,7 @@ public class JobRunner440 {
 		try {
 			input = (InputFormat440<?, ?>) inputConst.newInstance();
 			input.configure(config);
+			System.out.println(input.getKeyClass().getName());
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -65,11 +68,12 @@ public class JobRunner440 {
 		for (int i = 0; i < splits.length; i++) {
 			System.out.println(i);
 			RecordReader440<?, ?> rr = input.getRecordReader440(splits[i]);
-			
+			//Type cl = input.getKeyClass().getGenericSuperclass();
 			Record<?, ?> rec;
-			
+			Mapper<?,?,?,?> map = config.getMapperClass().getConstructor().newInstance();
 			while((rec = rr.next()) != null) {
 				System.out.println("<" + rec.key + ", " + rec.value + ">");
+				map.map(rec.key, rec.value, null);
 			}
 		}
 	}
