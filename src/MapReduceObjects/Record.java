@@ -2,11 +2,19 @@ package MapReduceObjects;
 
 public class Record<K, V> {
 	
-	public K key;
-	public V value;
+	private K key;
+	private V value;
 	
 	public Record(K key, V value) {
 		this.key = key;
 		this.value = value;
+	}
+	
+	public K getKey() {
+		return this.key; 
+	}
+	
+	public V getValue() {
+		return this.value;
 	}
 }

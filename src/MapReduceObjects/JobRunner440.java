@@ -3,7 +3,7 @@ package MapReduceObjects;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -49,10 +49,36 @@ public class JobRunner440 {
 		}
 		
 		InputFormat440<?, ?> input = null;
+		TypeVariable<?> K = null;
+		TypeVariable<?> V = null;
 		try {
 			input = (InputFormat440<?, ?>) inputConst.newInstance();
 			input.configure(config);
-			System.out.println(input.getKeyClass().getName());
+			K = input.getKeyClass().getTypeParameters()[0];
+			V = input.getValueClass().getTypeParameters()[0];
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		
+		Class<?> mapClass = config.getMapperClass();
+		Constructor<?> mapConst = null;
+		try {
+			mapConst = mapClass.getConstructor();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+		
+		Mapper<Long, String, String, Integer> map = null;
+		try {
+			map = (Mapper<Long, String, String, Integer>) mapConst.newInstance();
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -64,16 +90,18 @@ public class JobRunner440 {
 		}
 		
 		InputSplit440[] splits = input.getSplits(numMappers);
+		OutputCollecter<String, Integer> oc = new OutputCollecter();
 		
 		for (int i = 0; i < splits.length; i++) {
 			System.out.println(i);
-			RecordReader440<?, ?> rr = input.getRecordReader440(splits[i]);
-			//Type cl = input.getKeyClass().getGenericSuperclass();
-			Record<?, ?> rec;
-			Mapper<?,?,?,?> map = config.getMapperClass().getConstructor().newInstance();
+			RecordReader440<Long, String> rr = (RecordReader440<Long, String>) input.getRecordReader440(splits[i]);
+			
+			Record<Long, String> rec;
+			
 			while((rec = rr.next()) != null) {
 				System.out.println("<" + rec.key + ", " + rec.value + ">");
-				map.map(rec.key, rec.value, null);
+				map.map(rec.key, rec.value, oc);
+				System.out.println("YAY!");
 			}
 		}
 	}
