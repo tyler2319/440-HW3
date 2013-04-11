@@ -2,19 +2,25 @@ package MapReduceObjects;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 import Config.Configuration;
 import Interfaces.InputFormat440;
 import Interfaces.InputSplit440;
 import Interfaces.Mapper;
 import Interfaces.RecordReader440;
+import Interfaces.Reducer;
 
-public class JobProcessor440<K1, V1, K2, V2> {
+public class MapProcessor440<K1, V1, K2, V2> {
 	
 	private Configuration config;
 	private InputSplit440 split;
 	
-	public JobProcessor440(Configuration config, InputSplit440 split) {
+	public MapProcessor440(Configuration config, InputSplit440 split) {
 		this.config = config;
 		this.split = split;
 	}
@@ -49,7 +55,7 @@ public class JobProcessor440<K1, V1, K2, V2> {
 		Record<K1, V1> curRecord = rr.next();
 		
 		/* Set up the object that will hold the output key/ value pairs */
-		OutputCollecter<K2, V2> output = new OutputCollecter<K2, V2>();
+		OutputCollecter<K2, V2> mapOutput = new OutputCollecter<K2, V2>();
 		
 		/* Get a map class going that we can instantiate */
 		Class<?> mapClass = config.getMapperClass();
@@ -77,10 +83,50 @@ public class JobProcessor440<K1, V1, K2, V2> {
 		}
 		
 		while (curRecord != null) {
-			map.map(curRecord.getKey(), curRecord.getValue(), output);
+			map.map(curRecord.getKey(), curRecord.getValue(), mapOutput);
 			curRecord = rr.next();
 		}
 		
-		return output;
+		OutputCollecter<K2, V2> combOutput = new OutputCollecter<K2, V2>();
+		Class<?> combClass = config.getCombinerClass();
+		
+		if (combClass == null) {
+			return mapOutput;
+		}
+		
+		Constructor<?> combConst = null;
+		try {
+			combConst = combClass.getConstructor();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
+		
+		Reducer<K2, V2, K2, V2> combiner = null;
+		try {
+			combiner = (Reducer<K2, V2, K2, V2>) combConst.newInstance();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		
+		HashMap<K2, ArrayList<V2>> records = mapOutput.getRecords();
+		Set<K2> keys = records.keySet();
+		TreeSet<K2> sortedKeys = new TreeSet<K2>(keys);
+		Iterator<K2> keysIter = sortedKeys.iterator();
+		
+		while (keysIter.hasNext()) {
+			K2 curKey = keysIter.next();
+			Iterator<V2> curValues = records.get(curKey).iterator();
+			combiner.reduce(curKey, curValues, combOutput);
+		}
+		
+		return combOutput;
 	}
 }

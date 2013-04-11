@@ -25,4 +25,8 @@ public class OutputCollecter<K, V> {
 			records.put(key, values);
 		}
 	}
+	
+	public HashMap<K, ArrayList<V>> getRecords() {
+		return records;
+	}
 }

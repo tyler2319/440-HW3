@@ -15,7 +15,7 @@ public class WordcountConfig implements Configuration {
 	}
 
 	public Class<? extends Reducer> getCombinerClass() {
-		return null;
+		return WordcountReduce.class;
 	}
 
 	public Class<? extends Reducer> getReducerClass() {

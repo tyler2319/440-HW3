@@ -27,6 +27,7 @@ public class MapWorker {
 		new MapWorker(host, port);
 	}
 	
+	//TODO Delete - This is for testing only
 	public MapWorker() { }
 	
 	/* needs to take whatever is needed to start listening */
@@ -88,14 +89,14 @@ public class MapWorker {
 			currentlyWorking = true;
 			
 			InputFormat440 input = getInputFormat(config);
-			JobProcessor440 jp = null;
+			MapProcessor440 jp = null;
 			Class<?> K = config.getOutputKeyClass();
 			Class<?> V = config.getOutputValueClass();
 			
 			if (isInputText) {
 				if (K.equals(String.class)) {
 					if (V.equals(Integer.class)) {
-						jp = new JobProcessor440<Long, String, String, Integer>(config, inputSplit);
+						jp = new MapProcessor440<Long, String, String, Integer>(config, inputSplit);
 					}
 				}
 			}
