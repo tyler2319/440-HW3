@@ -1,11 +1,13 @@
 package Interfaces;
 
-public interface RecordReader440<key, value> {
+import MapReduceObjects.Record;
+
+public interface RecordReader440<K, V> {
 	
 	public void close();
-	public key createKey();
-	public value createValue();
+	public K createKey();
+	public V createValue();
 	public int getPos();
 	public float getProgress();
-	public boolean next(key k, value v);
+	public Record<K, V> next();
 }

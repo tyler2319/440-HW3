@@ -5,6 +5,7 @@ import java.nio.file.Files;
 
 import Config.Configuration;
 import Interfaces.RecordReader440;
+import MapReduceObjects.Record;
 
 public class LineRecordReader440 implements RecordReader440<Long, String> {
 	
@@ -20,7 +21,9 @@ public class LineRecordReader440 implements RecordReader440<Long, String> {
 		
 		try {
 			this.br = Files.newBufferedReader(split.getPath(), Charset.defaultCharset());
-			if (split.getStart() != 0) {
+			long n = 0;
+			if ((n = split.getStart()) != 0) {
+				br.skip(n);
 				String scrap = br.readLine();
 				pos += scrap.length();
 			}
@@ -57,13 +60,19 @@ public class LineRecordReader440 implements RecordReader440<Long, String> {
 		return null;
 	}
 
-	public boolean next(Long k, String v) {
+	public Record<Long, String> next() {
+		Long k;
+		String v;
+		
 		if (pos >= split.getLength()) {
-			return false;
+			return null;
 		} else {
 			k = createKey();
 			v = createValue();
-			return true;
+			if (v == null) {
+				return null;
+			}
+			return new Record<Long, String>(k, v);
 		}
 	}
 	

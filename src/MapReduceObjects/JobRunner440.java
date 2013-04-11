@@ -34,7 +34,8 @@ public class JobRunner440 {
 		}
 	}
 	
-	public InputSplit440[] getSplits() {
+	public void computeSplits() {
+		int numMappers = config.getNumOfMappers();
 		Class<?> inputClass = config.getInputFormat();
 		
 		Constructor<?> inputConst = null;
@@ -47,7 +48,6 @@ public class JobRunner440 {
 		}
 		
 		InputFormat440<?, ?> input = null;
-		
 		try {
 			input = (InputFormat440<?, ?>) inputConst.newInstance();
 			input.configure(config);
@@ -61,6 +61,17 @@ public class JobRunner440 {
 			e.printStackTrace();
 		}
 		
-		return input.getSplits(2);
+		InputSplit440[] splits = input.getSplits(numMappers);
+		
+		for (int i = 0; i < splits.length; i++) {
+			System.out.println(i);
+			RecordReader440<?, ?> rr = input.getRecordReader440(splits[i]);
+			
+			Record<?, ?> rec;
+			
+			while((rec = rr.next()) != null) {
+				System.out.println("<" + rec.key + ", " + rec.value + ">");
+			}
+		}
 	}
 }

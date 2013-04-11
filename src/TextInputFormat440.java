@@ -42,8 +42,7 @@ public class TextInputFormat440 implements InputFormat440<Long, String> {
 			e.printStackTrace();
 		}
 		
-		System.out.println(chars);
-		int charsPerSplit = numSplits / chars;
+		int charsPerSplit = chars / numSplits;
 		
 		TextLineSplit440[] result = new TextLineSplit440[numSplits];
 		Path path = Paths.get(pathStr);
