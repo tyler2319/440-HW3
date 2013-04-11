@@ -1,3 +1,5 @@
+package DefaultObjects;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,7 +22,7 @@ public class TextInputFormat440 implements InputFormat440<Long, String> {
 	}
 
 	public RecordReader440<Long, String> getRecordReader440(InputSplit440 split) {
-		return new LineRecordReader440(config, (TextLineSplit440) split);
+		return new LineRecordReader440((TextLineSplit440) split);
 	}
 
 	public InputSplit440[] getSplits(int numSplits) {
@@ -48,11 +50,11 @@ public class TextInputFormat440 implements InputFormat440<Long, String> {
 		Path path = Paths.get(pathStr);
 		
 		for(int i = 0; i < numSplits - 1; i++) {
-			result[i] = new TextLineSplit440(path, i * charsPerSplit, charsPerSplit, config);
+			result[i] = new TextLineSplit440(path, i * charsPerSplit, charsPerSplit);
 		}
 		int finalStart = (numSplits - 1) * charsPerSplit;
 		int finalLength = chars - (finalStart);
-		result[numSplits - 1] = new TextLineSplit440(path, finalStart, finalLength, config);
+		result[numSplits - 1] = new TextLineSplit440(path, finalStart, finalLength);
 		
 		return result;
 	}

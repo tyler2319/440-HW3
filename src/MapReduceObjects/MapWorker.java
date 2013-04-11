@@ -11,8 +11,6 @@ import java.nio.file.Path;
 import Config.Configuration;
 import Interfaces.InputFormat440;
 import Interfaces.InputSplit440;
-import Interfaces.Mapper;
-import Interfaces.RecordReader440;
 
 public class MapWorker {
 	private WorkerListener listener;
@@ -20,12 +18,16 @@ public class MapWorker {
 	private String host;
 	private int port;
 	private int workerIndex;
+	
+	private boolean isInputText;
 
 	public static void main(String[] args) {
 		String host = "hey there";
 		int port = 45;
 		new MapWorker(host, port);
 	}
+	
+	public MapWorker() { }
 	
 	/* needs to take whatever is needed to start listening */
 	public MapWorker(String host, int port) {
@@ -46,59 +48,73 @@ public class MapWorker {
 		}
 	}
 	
-	//TODO Need to get this to work with generics */
-	public void startJob(Configuration config, InputSplit440 inputSplit) {
+	public void determineType(InputFormat440 input) {
+		if (input.getClass().equals(DefaultObjects.TextInputFormat440.class)) {
+			isInputText = true;
+		}
+	}
+	
+	private InputFormat440 getInputFormat(Configuration config) {
+		Class<?> inputClass = config.getInputFormat();
+		Constructor<?> inputConst = null;
+		try {
+			inputConst = inputClass.getConstructor();
+		} catch (NoSuchMethodException e1) {
+			e1.printStackTrace();
+		} catch (SecurityException e1) {
+			e1.printStackTrace();
+		}
+		
+		InputFormat440<?, ?> input = null;
+		try {
+			input = (InputFormat440<?, ?>) inputConst.newInstance();
+			input.configure(config);
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		
+		determineType(input);
+		return input;
+	}
+	
+	public void startJob(Configuration config, InputSplit440 inputSplit) throws IllegalAccessException {
 		if (!currentlyWorking) {
 			currentlyWorking = true;
-			/* Set up the records to be read */
-			RecordReader440 recordReader = config.getInputFormat().getRecordReader440(inputSplit);
-			Record curRecord = recordReader.next();
 			
-			/* Set up the object that will hold the output key/ value pairs */
-			OutputCollecter output = new OutputCollecter();
+			InputFormat440 input = getInputFormat(config);
+			JobProcessor440 jp = null;
+			Class<?> K = config.getOutputKeyClass();
+			Class<?> V = config.getOutputValueClass();
 			
-			/* Get a map class going that we can instantiate */
-			Class<?> mapClass = config.getMapperClass();
-			Constructor<?> mapConst = null;
-			try {
-				mapConst = mapClass.getConstructor();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
+			if (isInputText) {
+				if (K.equals(String.class)) {
+					if (V.equals(Integer.class)) {
+						jp = new JobProcessor440<Long, String, String, Integer>(config, inputSplit);
+					}
+				}
 			}
 			
-			/* Get a mapper up and running so we can run it */
-			Mapper<?,?,?,?> map = null;
-			try {
-				map = (Mapper<?,?,?,?>) mapConst.newInstance();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-			}
-			
-			while (curRecord != null) {
-				map.map(curRecord.getKey(), curRecord.getValue(), output);
-				curRecord = recordReader.next();
-			}
+			OutputCollecter output = jp.runJob();
 			writeOutputToFile(output);
+			 
 			currentlyWorking = false;
 		}
 		else throw new IllegalAccessException("Worker already working.");
 	}
 	
+	public boolean currentlyWorking() {
+		return currentlyWorking;
+	}
+	
 	private void writeOutputToFile(OutputCollecter output) {
 		//TODO: Write the output to file
 		sendResultToMaster(null);
-	}
-	
-	public boolean currentlyWorking() {
-		return currentlyWorking;
 	}
 	
 	private void sendResultToMaster(Path result) {
@@ -114,6 +130,5 @@ public class MapWorker {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 	}
 }

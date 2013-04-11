@@ -4,6 +4,7 @@ import Interfaces.InputFormat440;
 import Interfaces.Mapper;
 import Interfaces.Reducer;
 
+@SuppressWarnings("rawtypes")
 public interface Configuration {
 	
 	public String getJobName();
@@ -19,4 +20,7 @@ public interface Configuration {
 	public int getNumOfReducers();
 	
 	public Class<? extends InputFormat440> getInputFormat();
+	
+	public Class<?> getOutputKeyClass();
+	public Class<?> getOutputValueClass();
 }

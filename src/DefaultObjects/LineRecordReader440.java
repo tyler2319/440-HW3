@@ -1,21 +1,20 @@
+package DefaultObjects;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
-import Config.Configuration;
 import Interfaces.RecordReader440;
 import MapReduceObjects.Record;
 
 public class LineRecordReader440 implements RecordReader440<Long, String> {
 	
-	private Configuration config;
 	private TextLineSplit440 split;
 	private int pos;
 	private BufferedReader br;
 	
-	public LineRecordReader440(Configuration config, TextLineSplit440 split) {
-		this.config = config;
+	public LineRecordReader440(TextLineSplit440 split) {
 		this.split = split;
 		this.pos = 0;
 		

@@ -3,6 +3,7 @@ import Interfaces.InputFormat440;
 import Interfaces.Mapper;
 import Interfaces.Reducer;
 
+@SuppressWarnings("rawtypes")
 public class WordcountConfig implements Configuration {
 
 	public String getJobName() {
@@ -22,13 +23,13 @@ public class WordcountConfig implements Configuration {
 	}
 
 	public String getInputFilePath() {
-		//return "/Users/Tyler/Documents/workspace/440-HW3/src/WordcountText.txt";
-		return "/Users/Justin/gitProjects/440-HW3/src/WordcountText.txt";
+		return "/Users/Tyler/Documents/workspace/440-HW3/src/WordcountText.txt";
+		//return "/Users/Justin/gitProjects/440-HW3/src/WordcountText.txt";
 	}
 
 	public String getOutputFilePath() {
-		//return "/Users/Tyler/Documents/workspace/440-HW3/src/WordcountOutput.txt";
-		return "/Users/Justin/gitProjects/440-HW3/src/WordcountOutput.txt";
+		return "/Users/Tyler/Documents/workspace/440-HW3/src/WordcountOutput.txt";
+		//return "/Users/Justin/gitProjects/440-HW3/src/WordcountOutput.txt";
 	}
 
 	public int getNumOfMappers() {
@@ -40,6 +41,14 @@ public class WordcountConfig implements Configuration {
 	}
 	
 	public Class<? extends InputFormat440> getInputFormat() {
-		return TextInputFormat440.class;
+		return DefaultObjects.TextInputFormat440.class;
+	}
+
+	public Class<?> getOutputKeyClass() {
+		return String.class;
+	}
+
+	public Class<?> getOutputValueClass() {
+		return Integer.class;
 	}
 }

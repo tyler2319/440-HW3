@@ -13,6 +13,8 @@ public class OutputCollecter<K, V> {
 	}
   
 	public void collect(K key, V value) {
+		System.out.println("<" + key + ", " + value + ">");
+		
 		if (records.containsKey(key)) {
 			ArrayList<V> values = records.get(key);
 			values.add(value);
