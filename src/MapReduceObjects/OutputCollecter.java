@@ -7,6 +7,10 @@ import java.util.HashMap;
 public class OutputCollecter<K, V> {
 	
 	private HashMap<K, ArrayList<V>> records;
+	
+	public OutputCollecter() {
+		records = new HashMap<K, ArrayList<V>>();
+	}
   
 	public void collect(K key, V value) {
 		if (records.containsKey(key)) {
