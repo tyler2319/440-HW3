@@ -1,5 +1,7 @@
 import Config.Configuration;
 import Interfaces.InputFormat440;
+import Interfaces.Mapper;
+import Interfaces.Reducer;
 
 public class WordcountConfig implements Configuration {
 
@@ -7,15 +9,15 @@ public class WordcountConfig implements Configuration {
 		return "wordcount";
 	}
 
-	public Class<?> getMapperClass() {
+	public Class<? extends Mapper> getMapperClass() {
 		return WordcountMap.class;
 	}
 
-	public Class<?> getCombinerClass() {
+	public Class<? extends Reducer> getCombinerClass() {
 		return null;
 	}
 
-	public Class<?> getReducerClass() {
+	public Class<? extends Reducer> getReducerClass() {
 		return WordcountReduce.class;
 	}
 
@@ -35,7 +37,7 @@ public class WordcountConfig implements Configuration {
 		return 1;
 	}
 	
-	public Class<?> getInputFormat() {
+	public Class<? extends InputFormat440> getInputFormat() {
 		return TextInputFormat440.class;
 	}
 }

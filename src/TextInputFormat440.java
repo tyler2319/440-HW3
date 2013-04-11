@@ -57,11 +57,11 @@ public class TextInputFormat440 implements InputFormat440<Long, String> {
 		return result;
 	}
 
-	public Class<?> getKeyClass() {
+	public Class<Long> getKeyClass() {
 		return Long.class;
 	}
 	
-	public Class<?> getValueClass() {
+	public Class<String> getValueClass() {
 		return String.class;
 	}
 }
