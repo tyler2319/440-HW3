@@ -19,7 +19,12 @@ public class MapWorker {
 	private Socket socket;
 	private int workerIndex;
 	
+	private Configuration curConfig;
+	private InputSplit440 curSplit;
+	
 	private boolean isInputText;
+	
+	private Thread thread;
 	
 	//TODO Delete - This is for testing only
 	public MapWorker() { }
@@ -36,7 +41,7 @@ public class MapWorker {
 		}
 	}
 	
-	public void determineType(InputFormat440 input) {
+	private void determineType(InputFormat440 input) {
 		if (input.getClass().equals(DefaultObjects.TextInputFormat440.class)) {
 			isInputText = true;
 		}
@@ -71,31 +76,47 @@ public class MapWorker {
 		return input;
 	}
 	
-	public void startJob(Configuration config, InputSplit440 inputSplit) throws IllegalAccessException {
-		if (!currentlyWorking) {
-			currentlyWorking = true;
-			
-			InputFormat440 input = getInputFormat(config);
-			MapProcessor440 jp = null;
-			Class<?> K = config.getOutputKeyClass();
-			Class<?> V = config.getOutputValueClass();
-			
-			if (isInputText) {
-				if (K.equals(String.class)) {
-					if (V.equals(Integer.class)) {
-						jp = new MapProcessor440<Long, String, String, Integer>(config, inputSplit);
-					} else if (V.equals(String.class)) {
-						jp = new MapProcessor440<Long, String, String, String>(config, inputSplit);
+	public synchronized void startJob(Configuration config, InputSplit440 inputSplit) throws Exception {
+		if (thread != null) {
+			throw new Exception("Worker busy");
+		}
+		
+		curConfig = config;
+		curSplit = inputSplit;
+		
+		thread = new Thread(new Runnable() {
+			public void run() {
+				if (!currentlyWorking) {
+					currentlyWorking = true;
+					
+					InputFormat440 input = getInputFormat(curConfig);
+					MapProcessor440 jp = null;
+					Class<?> K = curConfig.getOutputKeyClass();
+					Class<?> V = curConfig.getOutputValueClass();
+					
+					if (isInputText) {
+						if (K.equals(String.class)) {
+							if (V.equals(Integer.class)) {
+								jp = new MapProcessor440<Long, String, String, Integer>(curConfig, curSplit);
+							} else if (V.equals(String.class)) {
+								jp = new MapProcessor440<Long, String, String, String>(curConfig, curSplit);
+							}
+						}
+					}
+					
+					OutputCollecter output = jp.runJob();
+					writeOutputToFile(curConfig, output);
+					 
+					currentlyWorking = false;
+				} else {
+					try {
+						throw new IllegalAccessException("Worker already working.");
+					} catch (IllegalAccessException e) {
+						e.printStackTrace();
 					}
 				}
 			}
-			
-			OutputCollecter output = jp.runJob();
-			writeOutputToFile(config, output);
-			 
-			currentlyWorking = false;
-		}
-		else throw new IllegalAccessException("Worker already working.");
+		});
 	}
 	
 	public boolean currentlyWorking() {

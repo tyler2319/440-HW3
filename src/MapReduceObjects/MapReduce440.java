@@ -48,12 +48,6 @@ public class MapReduce440 {
 		if (com.equals("start") && args.length == 1) {
 			JobRunner440 jr = new JobRunner440(args[0]);
 			InputSplit440[] splits =  jr.computeSplits();
-			MapWorker mw = new MapWorker();
-			try {
-				mw.startJob(jr.getConfig(), splits[0]);
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
 		} else if (com.equals("monitor") && words.length == 1) {
 			//MONITOR CODE
 		} else if (com.equals("stop") && words.length == 1) {
