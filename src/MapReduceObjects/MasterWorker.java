@@ -1,6 +1,5 @@
 package MapReduceObjects;
 
-
 import java.util.LinkedList;
 
 import Config.Configuration;

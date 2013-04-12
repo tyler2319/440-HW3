@@ -1,14 +1,11 @@
 package MapReduceObjects;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -19,17 +16,11 @@ import Interfaces.InputSplit440;
 public class MapWorker {
 	private WorkerListener listener;
 	private boolean currentlyWorking = false;
-	private String host;
-	private int port;
+	private String masterHost;
+	private int masterPort;
 	private int workerIndex;
 	
 	private boolean isInputText;
-
-	public static void main(String[] args) {
-		String host = "hey there";
-		int port = 45;
-		new MapWorker(host, port);
-	}
 	
 	//TODO Delete - This is for testing only
 	public MapWorker() { }
@@ -37,9 +28,9 @@ public class MapWorker {
 	/* needs to take whatever is needed to start listening */
 	public MapWorker(String host, int port) {
 		try {
-			this.host = host;
-			this.port = port;
-			listener = new WorkerListener(new Socket(host, port), this);
+			this.masterHost = host;
+			this.masterPort = port;
+			listener = new WorkerListener(new Socket(masterHost, masterPort), this);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -146,7 +137,7 @@ public class MapWorker {
 		Socket connection;
 		ObjectOutputStream oos;
 		try {
-			connection = new Socket(host, port);
+			connection = new Socket(masterHost, masterPort);
 			oos = new ObjectOutputStream(connection.getOutputStream());
 			oos.writeObject("Result Path");
 			oos.writeObject(result);

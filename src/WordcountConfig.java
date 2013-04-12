@@ -21,6 +21,15 @@ public class WordcountConfig implements Configuration {
 	public Class<? extends Reducer> getReducerClass() {
 		return WordcountReduce.class;
 	}
+	
+	public String getMasterLocation() {
+		return "localhost:8888";
+	}
+	
+	public String[] getWorkerLocations() {
+		String[] locations = {"localhost:8889"};
+		return locations;
+	}
 
 	public String getInputFilePath() {
 		return "/Users/Tyler/Documents/workspace/440-HW3/src/WordcountText.txt";

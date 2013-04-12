@@ -21,6 +21,8 @@ public class MapReduce440 {
 	public void receiveCommands() throws Exception {
 		String result = "";
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		MapReduceListener mrl = new MapReduceListener(8888, 10);
+		mrl.start();
 		
 		while(isRunning) {
 			System.out.print("==> ");

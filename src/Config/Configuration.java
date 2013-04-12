@@ -13,6 +13,9 @@ public interface Configuration {
 	public Class<? extends Reducer> getCombinerClass();
 	public Class<? extends Reducer> getReducerClass();
 	
+	public String getMasterLocation();
+	public String[] getWorkerLocations();
+	
 	public String getInputFilePath();
 	public String getOutputFilePath();
 	
