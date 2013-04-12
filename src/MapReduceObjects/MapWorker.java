@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import Config.Configuration;
 import Interfaces.InputFormat440;
@@ -97,12 +98,14 @@ public class MapWorker {
 				if (K.equals(String.class)) {
 					if (V.equals(Integer.class)) {
 						jp = new MapProcessor440<Long, String, String, Integer>(config, inputSplit);
+					} else if (V.equals(String.class)) {
+						jp = new MapProcessor440<Long, String, String, String>(config, inputSplit);
 					}
 				}
 			}
 			
 			OutputCollecter output = jp.runJob();
-			writeOutputToFile(output);
+			writeOutputToFile(config, output);
 			 
 			currentlyWorking = false;
 		}
@@ -113,9 +116,28 @@ public class MapWorker {
 		return currentlyWorking;
 	}
 	
-	private void writeOutputToFile(OutputCollecter output) {
-		//TODO: Write the output to file
-		sendResultToMaster(null);
+	private void writeOutputToFile(Configuration config, OutputCollecter output) {
+		String outputPath = config.getOutputFilePath();
+		String[] splitOnPeriod = outputPath.split("\\.");
+		splitOnPeriod[0] += "_map" + workerIndex;
+		
+		if (splitOnPeriod.length == 2) {
+			splitOnPeriod[1] = "." + splitOnPeriod[1];
+		}
+		
+		String newPath = "";
+		
+		for (int i = 0; i < splitOnPeriod.length; i++) {
+			newPath += splitOnPeriod[i];
+		}
+		
+		System.out.println(newPath);
+		Path p = Paths.get(newPath);
+		
+		RecordWriter440 rw = new RecordWriter440(config, output, p);
+		rw.writeOutput();
+		
+		//sendResultToMaster(p);
 	}
 	
 	private void sendResultToMaster(Path result) {

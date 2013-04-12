@@ -23,4 +23,6 @@ public interface Configuration {
 	
 	public Class<?> getOutputKeyClass();
 	public Class<?> getOutputValueClass();
+	
+	public int getRecordLength();
 }

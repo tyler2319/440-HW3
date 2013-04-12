@@ -1,7 +1,7 @@
 package MapReduceObjects;
 
-import Interfaces.Mapper;
-import Interfaces.RecordReader440;
+import Config.Configuration;
+import Interfaces.InputSplit440;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -62,11 +62,17 @@ public class WorkerListener {
 							}
 						} else if (request.equals("Start job")) {
 							try {
-								RecordReader440 records;
+								Configuration config;
+								InputSplit440 split;
 								try {
-									records = (RecordReader440) ois.readObject();
-									Mapper map = (Mapper) ois.readObject();
-									if (!worker.currentlyWorking()) worker.startJob(records, map);
+									config = (Configuration) ois.readObject();
+									split = (InputSplit440) ois.readObject();
+									if (!worker.currentlyWorking())
+										try {
+											worker.startJob(config, split);
+										} catch (IllegalAccessException e) {
+											e.printStackTrace();
+										}
 									else oos.writeObject("Worker busy.");
 								} catch (ClassNotFoundException e) {
 									// TODO Auto-generated catch block

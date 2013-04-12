@@ -51,4 +51,8 @@ public class WordcountConfig implements Configuration {
 	public Class<?> getOutputValueClass() {
 		return Integer.class;
 	}
+
+	public int getRecordLength() {
+		return 64;
+	}
 }
