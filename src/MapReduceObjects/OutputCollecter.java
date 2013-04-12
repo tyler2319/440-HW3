@@ -6,25 +6,17 @@ import java.util.HashMap;
 
 public class OutputCollecter<K, V> {
 	
-	private HashMap<K, ArrayList<V>> records;
+	private ArrayList<Record<K, V>> records;
 	
 	public OutputCollecter() {
-		records = new HashMap<K, ArrayList<V>>();
+		records = new ArrayList<Record<K, V>>();
 	}
   
 	public void collect(K key, V value) {
-		if (records.containsKey(key)) {
-			ArrayList<V> values = records.get(key);
-			values.add(value);
-			records.put(key, values);
-		} else {
-			ArrayList<V> values = new ArrayList<V>();
-			values.add(value);
-			records.put(key, values);
-		}
+		records.add(new Record<K, V>(key, value));
 	}
 	
-	public HashMap<K, ArrayList<V>> getRecords() {
+	public ArrayList<Record<K, V>> getRecords() {
 		return records;
 	}
 }

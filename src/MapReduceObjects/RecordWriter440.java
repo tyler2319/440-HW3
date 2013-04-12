@@ -32,14 +32,11 @@ public class RecordWriter440 {
 			e.printStackTrace();
 		}
 		
-		HashMap rec = output.getRecords();
-		Set keys = rec.keySet();
-		TreeSet sortedKeys = new TreeSet(keys);
-		Iterator keysIter = sortedKeys.iterator();
+		Iterator rec = output.getRecords().iterator();
 		
-		while(keysIter.hasNext()) {
-			Object curKey = keysIter.next();
-			String toPrint = "<" + curKey + ", " + rec.get(curKey) + ">";
+		while(rec.hasNext()) {
+			Record curRec = (Record) rec.next();
+			String toPrint = "<" + curRec.getKey() + ", " + curRec.getValue() + ">";
 			byte[] bytes = new byte[config.getRecordLength()];
 			
 			for(int i = 0; i < toPrint.length(); i++) {
