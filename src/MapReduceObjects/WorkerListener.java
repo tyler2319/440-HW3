@@ -72,6 +72,8 @@ public class WorkerListener {
 											worker.startJob(config, split);
 										} catch (IllegalAccessException e) {
 											e.printStackTrace();
+										} catch (Exception e) {
+											e.printStackTrace();
 										}
 									else oos.writeObject("Worker busy.");
 								} catch (ClassNotFoundException e) {
