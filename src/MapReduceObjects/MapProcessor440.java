@@ -116,8 +116,7 @@ public class MapProcessor440<K1, V1, K2, V2> {
 			e.printStackTrace();
 		}
 		
-		ArrayList<Record<K2, V2>> records = mapOutput.getRecords();
-		HashMap<K2, ArrayList<V2>> hm = groupValues(records);
+		HashMap<K2, ArrayList<V2>> hm = mapOutput.groupOutput();
 		Set<K2> keys = hm.keySet();
 		TreeSet<K2> sortedKeys = new TreeSet<K2>(keys);
 		Iterator<K2> keysIter = sortedKeys.iterator();
@@ -129,26 +128,5 @@ public class MapProcessor440<K1, V1, K2, V2> {
 		}
 		
 		return combOutput;
-	}
-	
-	private HashMap<K2, ArrayList<V2>> groupValues(ArrayList<Record<K2, V2>> rec) {
-		HashMap<K2, ArrayList<V2>> hm = new HashMap<K2, ArrayList<V2>>();
-		
-		for (int i = 0; i < rec.size(); i++) {
-			Record<K2, V2> curRec = rec.get(i);
-			K2 key = curRec.getKey();
-			V2 val = curRec.getValue();
-			if (hm.containsKey(key)) {
-				ArrayList<V2> valArray = hm.get(key);
-				valArray.add(val);
-				hm.put(key, valArray);
-			} else {
-				ArrayList<V2> valArray = new ArrayList<V2>();
-				valArray.add(val);
-				hm.put(key, valArray);
-			}
-		}
-		
-		return hm;
 	}
 }
