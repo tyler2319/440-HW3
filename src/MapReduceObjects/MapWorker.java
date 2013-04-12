@@ -1,11 +1,14 @@
 package MapReduceObjects;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -131,7 +134,6 @@ public class MapWorker {
 			newPath += splitOnPeriod[i];
 		}
 		
-		System.out.println(newPath);
 		Path p = Paths.get(newPath);
 		
 		RecordWriter440 rw = new RecordWriter440(config, output, p);
