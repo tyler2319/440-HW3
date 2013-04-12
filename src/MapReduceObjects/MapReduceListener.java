@@ -31,7 +31,7 @@ public class MapReduceListener {
     
     public synchronized void start() throws Exception {
 		if (thread != null) {
-			throw new Exception("ServerSocket already started.");
+			throw new Exception("MapReduceListener already started.");
 		}
 
 		server = new ServerSocket(port, backlog);
@@ -55,13 +55,24 @@ public class MapReduceListener {
 						input = new ObjectInputStream(s.getInputStream());
 						String command = (String) input.readObject();
 						if (command.equals("master")) {
+							String config = (String) input.readObject();
+							MasterWorker mw = new MasterWorker(config);
 							
+							try {
+								mw.start();
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						} else if (command.equals("mapworker")) {
+							MapWorker mw = new MapWorker(s);
 						} else {
-							
+							throw new Exception("Invalid command.");
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
 					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}

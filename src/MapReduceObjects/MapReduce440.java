@@ -46,12 +46,11 @@ public class MapReduce440 {
 		}
 
 		if (com.equals("start") && args.length == 1) {
-			Configuration config = getConfig(args[0]);
-			JobRunner440 jr = new JobRunner440(config);
+			JobRunner440 jr = new JobRunner440(args[0]);
 			InputSplit440[] splits =  jr.computeSplits();
 			MapWorker mw = new MapWorker();
 			try {
-				mw.startJob(config, splits[0]);
+				mw.startJob(jr.getConfig(), splits[0]);
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}
@@ -62,41 +61,5 @@ public class MapReduce440 {
 		} else {
 			System.out.println("Command not " + com + " recognized.");
 		}
-	}
-	
-	public Configuration getConfig(String path) {
-		String[] parts = path.split("/");
-		String[] fileParts = parts[parts.length - 1].split("\\.");
-		
-		if (fileParts.length != 2 || !fileParts[1].equals("class")) {
-			System.out.println("Configuration file must be a valid Java class");
-			return null;
-		}
-		
-		ClassLoader440 cl = new ClassLoader440();
-		Class<?> configClass = cl.getClass(path, fileParts[0]);
-		Constructor<?> configConst = null;
-		try {
-			configConst = configClass.getConstructor();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		}
-		
-		Configuration config = null;
-		try {
-			config = (Configuration)configConst.newInstance();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-		
-		return config;
 	}
 }

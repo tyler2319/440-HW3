@@ -16,8 +16,7 @@ import Interfaces.InputSplit440;
 public class MapWorker {
 	private WorkerListener listener;
 	private boolean currentlyWorking = false;
-	private String masterHost;
-	private int masterPort;
+	private Socket socket;
 	private int workerIndex;
 	
 	private boolean isInputText;
@@ -26,16 +25,9 @@ public class MapWorker {
 	public MapWorker() { }
 	
 	/* needs to take whatever is needed to start listening */
-	public MapWorker(String host, int port) {
-		try {
-			this.masterHost = host;
-			this.masterPort = port;
-			listener = new WorkerListener(new Socket(masterHost, masterPort), this);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public MapWorker(Socket socket) {
+		this.socket = socket;
+		listener = new WorkerListener(socket, this);
 		
 		try {
 			listener.start();
@@ -137,7 +129,7 @@ public class MapWorker {
 		Socket connection;
 		ObjectOutputStream oos;
 		try {
-			connection = new Socket(masterHost, masterPort);
+			connection = socket;
 			oos = new ObjectOutputStream(connection.getOutputStream());
 			oos.writeObject("Result Path");
 			oos.writeObject(result);
