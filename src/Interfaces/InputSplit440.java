@@ -1,9 +1,8 @@
 package Interfaces;
 
-import java.nio.file.Path;
+import java.io.Serializable;
 
-public interface InputSplit440 {
-
+public interface InputSplit440 extends Serializable{
 	public int getLength();
-	public Path getPath();
+	public String getPath();
 }

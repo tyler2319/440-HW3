@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import Interfaces.RecordReader440;
 import MapReduceObjects.Record;
@@ -19,7 +20,7 @@ public class LineRecordReader440 implements RecordReader440<Long, String> {
 		this.pos = 0;
 		
 		try {
-			this.br = Files.newBufferedReader(split.getPath(), Charset.defaultCharset());
+			this.br = Files.newBufferedReader(Paths.get(split.getPath()), Charset.defaultCharset());
 			long n = 0;
 			if ((n = split.getStart()) != 0) {
 				br.skip(n);

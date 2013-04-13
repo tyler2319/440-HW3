@@ -1,9 +1,13 @@
 package MapReduceObjects;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 import ClassLoader.ClassLoader440;
 import Config.Configuration;
@@ -12,7 +16,13 @@ import Interfaces.InputSplit440;
 public class MapReduce440 {
 	
 	private boolean isRunning = true;
+	private int port;
+	private int backlog;
 
+	public MapReduce440(int port, int backlog) {
+		this.port = port;
+		this.backlog = backlog;
+	}
 	/** receiveCommands()
 	 * 
 	 * Runs the command prompt
@@ -21,7 +31,7 @@ public class MapReduce440 {
 	public void receiveCommands() throws Exception {
 		String result = "";
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		MapReduceListener mrl = new MapReduceListener(8888, 10);
+		MapReduceListener mrl = new MapReduceListener(port, backlog);
 		mrl.start();
 		
 		while(isRunning) {
@@ -46,8 +56,29 @@ public class MapReduce440 {
 		}
 
 		if (com.equals("start") && args.length == 1) {
-			JobRunner440 jr = new JobRunner440(args[0]);
-			InputSplit440[] splits =  jr.computeSplits();
+			//First connect to master, then let them know what's up.
+			String configPath = args[0];
+			JobRunner440 jr = new JobRunner440(configPath);
+			Configuration config = jr.getConfig();
+			String[] masterInfo = config.getMasterLocation().split(":");
+			String host = masterInfo[0];
+			int port = Integer.parseInt(masterInfo[1]);
+			Socket jobInfo = null;
+			ObjectOutputStream details = null;
+			try {
+				jobInfo = new Socket(host, port);
+				details = new ObjectOutputStream(jobInfo.getOutputStream());
+				details.writeObject("master");
+				details.writeObject(configPath);
+				details.close();
+				jobInfo.close();
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		} else if (com.equals("monitor") && words.length == 1) {
 			//MONITOR CODE
 		} else if (com.equals("stop") && words.length == 1) {

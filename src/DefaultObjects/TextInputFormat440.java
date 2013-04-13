@@ -47,14 +47,14 @@ public class TextInputFormat440 implements InputFormat440<Long, String> {
 		int charsPerSplit = chars / numSplits;
 		
 		TextLineSplit440[] result = new TextLineSplit440[numSplits];
-		Path path = Paths.get(pathStr);
+		//Path path = Paths.get(pathStr);
 		
 		for(int i = 0; i < numSplits - 1; i++) {
-			result[i] = new TextLineSplit440(path, i * charsPerSplit, charsPerSplit);
+			result[i] = new TextLineSplit440(pathStr, i * charsPerSplit, charsPerSplit);
 		}
 		int finalStart = (numSplits - 1) * charsPerSplit;
 		int finalLength = chars - (finalStart);
-		result[numSplits - 1] = new TextLineSplit440(path, finalStart, finalLength);
+		result[numSplits - 1] = new TextLineSplit440(pathStr, finalStart, finalLength);
 		
 		return result;
 	}

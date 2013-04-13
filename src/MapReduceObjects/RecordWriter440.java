@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -16,9 +17,9 @@ public class RecordWriter440 {
 	
 	private Configuration config;
 	private OutputCollecter output;
-	private Path path;
+	private String path;
 	
-	public RecordWriter440(Configuration config, OutputCollecter output, Path path) {
+	public RecordWriter440(Configuration config, OutputCollecter output, String path) {
 		this.config = config;
 		this.output = output;
 		this.path = path;
@@ -27,7 +28,7 @@ public class RecordWriter440 {
 	public void writeOutput() {
 		OutputStream os = null;
 		try {
-			os = Files.newOutputStream(path);
+			os = Files.newOutputStream(Paths.get(path));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

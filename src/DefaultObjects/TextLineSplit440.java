@@ -6,11 +6,11 @@ import Interfaces.InputSplit440;
 
 public class TextLineSplit440 implements InputSplit440 {
 	
-	private Path path;
+	private String path;
 	private int start;
 	private int length;
 	
-	public TextLineSplit440(Path path, int start, int length) {
+	public TextLineSplit440(String path, int start, int length) {
 		this.path = path;
 		this.start = start;
 		this.length = length;
@@ -20,7 +20,7 @@ public class TextLineSplit440 implements InputSplit440 {
 		return length;
 	}
 	
-	public Path getPath() {
+	public String getPath() {
 		return path;
 	}
 

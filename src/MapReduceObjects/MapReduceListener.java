@@ -55,6 +55,7 @@ public class MapReduceListener {
 						input = new ObjectInputStream(s.getInputStream());
 						String command = (String) input.readObject();
 						if (command.equals("master")) {
+							System.out.println("master called on port " + port);
 							String config = (String) input.readObject();
 							MasterWorker mw = new MasterWorker(config);
 							
@@ -64,6 +65,7 @@ public class MapReduceListener {
 								e.printStackTrace();
 							}
 						} else if (command.equals("mapworker")) {
+							System.out.println("Map worker called on port" + port);
 							MapWorker mw = new MapWorker(s);
 						} else {
 							throw new Exception("Invalid command.");

@@ -62,19 +62,19 @@ public class WorkerListener {
 							}
 						} else if (request.equals("Start job")) {
 							try {
-								Configuration config;
+								String configPath;
 								InputSplit440 split;
 								try {
-									config = (Configuration) ois.readObject();
+									configPath = (String) ois.readObject();
 									split = (InputSplit440) ois.readObject();
-									if (!worker.currentlyWorking())
+									if (!worker.currentlyWorking()) {
+										oos.writeObject("Ready.");
 										try {
-											worker.startJob(config, split);
-										} catch (IllegalAccessException e) {
-											e.printStackTrace();
+											worker.startJob(configPath, split);
 										} catch (Exception e) {
 											e.printStackTrace();
 										}
+									}
 									else oos.writeObject("Worker busy.");
 								} catch (ClassNotFoundException e) {
 									// TODO Auto-generated catch block

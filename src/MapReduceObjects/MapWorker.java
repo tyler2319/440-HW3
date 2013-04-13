@@ -76,19 +76,19 @@ public class MapWorker {
 		return input;
 	}
 	
-	public synchronized void startJob(Configuration config, InputSplit440 inputSplit) throws Exception {
+	/*public synchronized void startJob(String configPath, InputSplit440 inputSplit) throws Exception {
 		if (thread != null) {
 			throw new Exception("Worker busy");
 		}
 		
-		curConfig = config;
+		JobRunner440 jr = new JobRunner440(configPath);
+		curConfig = jr.getConfig();
 		curSplit = inputSplit;
-		
 		thread = new Thread(new Runnable() {
 			public void run() {
 				if (!currentlyWorking) {
 					currentlyWorking = true;
-					
+					System.out.println("Working on job");
 					InputFormat440 input = getInputFormat(curConfig);
 					MapProcessor440 jp = null;
 					Class<?> K = curConfig.getOutputKeyClass();
@@ -117,6 +117,40 @@ public class MapWorker {
 				}
 			}
 		});
+	}*/
+	
+	public void startJob(String configPath, InputSplit440 inputSplit) {
+		JobRunner440 jr = new JobRunner440(configPath);
+		curConfig = jr.getConfig();
+		curSplit = inputSplit;
+		if (!currentlyWorking) {
+			currentlyWorking = true;
+			InputFormat440 input = getInputFormat(curConfig);
+			MapProcessor440 jp = null;
+			Class<?> K = curConfig.getOutputKeyClass();
+			Class<?> V = curConfig.getOutputValueClass();
+			
+			if (isInputText) {
+				if (K.equals(String.class)) {
+					if (V.equals(Integer.class)) {
+						jp = new MapProcessor440<Long, String, String, Integer>(curConfig, curSplit);
+					} else if (V.equals(String.class)) {
+						jp = new MapProcessor440<Long, String, String, String>(curConfig, curSplit);
+					}
+				}
+			}
+			
+			OutputCollecter output = jp.runJob();
+			writeOutputToFile(curConfig, output);
+			 
+			currentlyWorking = false;
+		} else {
+			try {
+				throw new IllegalAccessException("Worker already working.");
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public boolean currentlyWorking() {
@@ -138,25 +172,33 @@ public class MapWorker {
 			newPath += splitOnPeriod[i];
 		}
 		
-		Path p = Paths.get(newPath);
+		//Path p = Paths.get(newPath);
 		
-		RecordWriter440 rw = new RecordWriter440(config, output, p);
+		RecordWriter440 rw = new RecordWriter440(config, output, newPath);
 		rw.writeOutput();
 		
-		//sendResultToMaster(p);
+		sendResultToMaster(newPath);
 	}
 	
-	private void sendResultToMaster(Path result) {
+	private void sendResultToMaster(String result) {
+		System.out.println("Want to send result to master.");
 		Socket connection;
 		ObjectOutputStream oos;
+		listener.stop();
 		try {
 			connection = socket;
 			oos = new ObjectOutputStream(connection.getOutputStream());
-			oos.writeObject("Result Path");
+			oos.writeObject("ResultPath");
 			oos.writeObject(result);
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			//listener.start();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
