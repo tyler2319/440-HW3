@@ -41,7 +41,7 @@ public class MasterWorker {
 				for (int i = 0; i < splits.length; i++) {
 					unperformedMaps.add(splits[i]);
 				}
-				performMapWork(config);
+				performMapWork(config); 
 			}
 		});
 
