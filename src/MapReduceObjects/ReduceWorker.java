@@ -41,8 +41,9 @@ public class ReduceWorker {
 			config = jr.getConfig();
 			this.recordPath = recordPath;
 			this.id = jobID;
-			System.out.println("Ready to start reducing!");
-			sendResultToMaster("Hey there you crazy!");
+			/* First, collect all common keys.
+			 * Then, run reduce on them.
+			 */
 			currentlyWorking = false;
 		}
 		else {

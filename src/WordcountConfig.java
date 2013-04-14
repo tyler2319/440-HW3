@@ -46,7 +46,7 @@ public class WordcountConfig implements Configuration {
 	}
 
 	public int getNumOfReducers() {
-		return 2;
+		return 1;
 	}
 	
 	public Class<? extends InputFormat440> getInputFormat() {
