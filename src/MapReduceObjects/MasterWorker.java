@@ -14,6 +14,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import Config.Configuration;
 import Interfaces.InputSplit440;
@@ -28,6 +31,7 @@ public class MasterWorker {
 	private LinkedList<MapWorkCommunicator> avaliableMapWorkers = new LinkedList<MapWorkCommunicator>();
 	private LinkedList<ReduceWorkerCommunicator> avaliableReduceWorkers = new LinkedList<ReduceWorkerCommunicator>();
 	private LinkedList<InputSplit440> unperformedMaps = new LinkedList<InputSplit440>();
+	private InputSplit440[] sentOutMapWork;
 	private LinkedList<ArrayList<Integer>> unperformedReduces = new LinkedList<ArrayList<Integer>>();
 	private int mapWorkIndex = 0;
 	private int reduceWorkIndex = 0;
@@ -35,6 +39,8 @@ public class MasterWorker {
 	private String[] completedReducePaths;
 	private int nextOpenMapIndex = 0;
 	private int nextOpenReduceIndex = 0;
+	
+	ScheduledExecutorService workerCheck = Executors.newSingleThreadScheduledExecutor();
 	
 	private ArrayList<Integer>[] recordsSplitToReduceWorkers;
 	
@@ -64,7 +70,14 @@ public class MasterWorker {
 				}
 				completedMapPaths = new String[splits.length];
 				initMapWorkers();
+				/*workerCheck.scheduleAtFixedRate(new Runnable() {
+					  @Override
+					  public void run() {
+					    checkIfWorkersAlive();
+					  }
+					}, 0, 5, TimeUnit.SECONDS);*/
 				performMapWork();
+				workerCheck.shutdown();
 				initReduce();
 				performReduceWork();
 			}
@@ -105,6 +118,7 @@ public class MasterWorker {
 		try {
 			outWriter = Files.newBufferedWriter(Paths.get(intermediateFilepath), Charset.defaultCharset());
 		    for (String path : completedMapPaths) {
+		    	System.out.println("path: " + path);
 		    	BufferedReader br = null;
 				br = Files.newBufferedReader(Paths.get(path), Charset.defaultCharset());
 				String curLine;
@@ -161,13 +175,15 @@ public class MasterWorker {
 			if (avaliableMapWorkers.size() > 0 && unperformedMaps.size() > 0) {
 				MapWorkCommunicator nextWorker = avaliableMapWorkers.poll();
 				InputSplit440 nextMap = unperformedMaps.poll();
+				//Make sure we have this work on record so we can re-commission it if need be.
+				sentOutMapWork[nextWorker.getID()] = nextMap;
 				nextWorker.sendWork(configPath, nextMap, mapWorkIndex);
 				mapWorkIndex += 1;
 			}
 		}
 		System.out.println("Map work all done!");
 		for (MapWorkCommunicator mwc: allMapWorkers) {
-			mwc.closeSocket();
+			if (mwc != null) mwc.closeSocket();
 		}
 	}
 	
@@ -203,6 +219,7 @@ public class MasterWorker {
 	}
 	
 	private void initMapWorkers() {
+		sentOutMapWork = new InputSplit440[config.getWorkerLocations().length];
 		allMapWorkers = new MapWorkCommunicator[config.getWorkerLocations().length];
 		String[] workerLocations = config.getWorkerLocations();
 		for (int i = 0; i < config.getWorkerLocations().length; i++) {
@@ -229,6 +246,8 @@ public class MasterWorker {
 	
 	public void jobFinished(String path, int indexOfFinishedWorker) {
 		System.out.println("Job finished.");
+		allMapWorkers[indexOfFinishedWorker].stop();
+		sentOutMapWork[indexOfFinishedWorker] = null;
 		completedMapPaths[nextOpenMapIndex] = path;
 		nextOpenMapIndex += 1;
 		avaliableMapWorkers.push(allMapWorkers[indexOfFinishedWorker]);
@@ -236,8 +255,26 @@ public class MasterWorker {
 	
 	public void reduceFinished(String path, int indexOfFinishedWorker) {
 		System.out.println("Reduce finished");
+		allReduceWorkers[indexOfFinishedWorker].stop();
 		completedReducePaths[nextOpenReduceIndex] = path;
 		nextOpenReduceIndex += 1;
 		avaliableReduceWorkers.push(allReduceWorkers[indexOfFinishedWorker]);
+	}
+	
+	private void checkIfWorkersAlive() {
+		System.out.println("checking if workers alive");
+		for (int i = 0; i < sentOutMapWork.length; i++) {
+			System.out.println("index: " + i);
+			InputSplit440 curSplit = sentOutMapWork[i];
+			if (curSplit != null) {
+				boolean stillAlive = allMapWorkers[i].checkIfAlive();
+				System.out.println("Still alive? " + stillAlive);
+				if (!stillAlive) {
+					unperformedMaps.add(curSplit);
+					allMapWorkers[i].closeSocket();
+					allMapWorkers[i] = null;
+				}
+			}
+		}
 	}
 }

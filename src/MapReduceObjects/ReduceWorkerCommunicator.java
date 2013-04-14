@@ -22,8 +22,6 @@ public class ReduceWorkerCommunicator {
     
     private int id;
     
-    private boolean hasBeenInitialized = false;
-    
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
 	
@@ -81,6 +79,19 @@ public class ReduceWorkerCommunicator {
 			thread.start();
 		}
 	
+    /** stop()
+     * 
+     * Stops the process of listening for requests
+     */
+    public synchronized void stop() {
+		if (thread == null) {
+			return;
+		}
+		
+		running = false;
+		thread = null;
+	}
+	
 	public void sendWork(String configPath, String recordPath, ArrayList<Integer> recordLocs, int workID) {
 		try {
 			if (oos == null) {
@@ -98,17 +109,11 @@ public class ReduceWorkerCommunicator {
 			//Resume the thread if we should send work again
 			//TODO GET THIS TO RESUME LISTENING (what running = true is supposed to do)
 			if (response.equals("Ready.")) {
-				if (hasBeenInitialized) {
-					running = true;
-				}
-				else {
-					hasBeenInitialized = true;
-					try {
-						this.start();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+				try {
+					this.start();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		} catch (IOException e) {

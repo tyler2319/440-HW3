@@ -41,6 +41,7 @@ public class ReduceWorker {
 			config = jr.getConfig();
 			this.recordPath = recordPath;
 			this.id = jobID;
+			sendResultToMaster("silly/bro");
 			/* First, collect all common keys.
 			 * Then, run reduce on them.
 			 */

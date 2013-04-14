@@ -54,8 +54,8 @@ public class WorkerListener {
 						} catch (ClassNotFoundException e) {
 							e.printStackTrace();
 						}
-						
-						if (request.equals("Still alive?")) {
+						if (request == null) {}
+						else if (request.equals("Still alive?")) {
 							try {
 								oos.writeObject("Yes");
 							} catch (IOException e) {

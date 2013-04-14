@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 import Interfaces.InputSplit440;
 
@@ -21,8 +22,6 @@ public class MapWorkCommunicator {
     private MasterWorker master;
     
     private int id;
-    
-    private boolean hasBeenInitialized = false;
     
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
@@ -95,19 +94,12 @@ public class MapWorkCommunicator {
 			oos.writeObject(input);
 			String response = (String)ois.readObject();
 			//Resume the thread if we should send work again
-			//TODO GET THIS TO RESUME LISTENING (what running = true is supposed to do)
 			if (response.equals("Ready.")) {
-				if (hasBeenInitialized) {
-					running = true;
-				}
-				else {
-					hasBeenInitialized = true;
-					try {
-						this.start();
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+				try {
+					this.start();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 		} catch (IOException e) {
@@ -117,7 +109,7 @@ public class MapWorkCommunicator {
 		}
 	}
 	
-	/*public void shutDown() {
+	public boolean checkIfAlive() {
 		try {
 			if (oos == null) {
 				oos = new ObjectOutputStream(sock.getOutputStream());
@@ -125,14 +117,48 @@ public class MapWorkCommunicator {
 			if (ois == null) {
 				ois = new ObjectInputStream(sock.getInputStream());
 			}
-			oos.writeObject("Thanks for your work.");
-			oos.close();
-			ois.close();
-			sock.close();
+			oos.writeObject("Still alive?");
+			sock.setSoTimeout(5000);
+			String response;
+			try {
+				response = (String)ois.readObject();
+			//Worker didn't respond in time.
+			} catch (SocketTimeoutException e) {
+				sock.setSoTimeout(1000000);
+				return false;
+			}
+			//Resume the thread if we should send work again
+			if (response.equals("Yes")) {
+				System.out.println("Map worker " + id + " alive!");
+				try {
+					this.start();
+					return true;
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
-	}*/
+		//Shouldn't ever get here!
+		return false;
+	}
+	
+    /** stop()
+     * 
+     * Stops the process of listening for requests
+     */
+    public synchronized void stop() {
+		if (thread == null) {
+			return;
+		}
+		
+		running = false;
+		thread = null;
+	}
 	
 	public void closeSocket() {
 		try {
@@ -141,5 +167,9 @@ public class MapWorkCommunicator {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public int getID() {
+		return id;
 	}
 }
