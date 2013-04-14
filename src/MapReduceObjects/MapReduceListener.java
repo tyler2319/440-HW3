@@ -67,7 +67,11 @@ public class MapReduceListener {
 						} else if (command.equals("mapworker")) {
 							System.out.println("Map worker called on port" + port);
 							MapWorker mw = new MapWorker(s);
-						} else {
+						} else if (command.equals("reduceworker")) {
+							System.out.println("Reduce worker called on port" + port);
+							ReduceWorker rw = new ReduceWorker(s);
+						}
+						else {
 							throw new Exception("Invalid command.");
 						}
 					} catch (IOException e) {

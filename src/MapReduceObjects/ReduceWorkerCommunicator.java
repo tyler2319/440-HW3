@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import Interfaces.InputSplit440;
 
-
-public class MapWorkCommunicator {
+public class ReduceWorkerCommunicator {
 	//Thread in which the process will be run
 	private Thread thread;
 
@@ -27,7 +27,7 @@ public class MapWorkCommunicator {
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
 	
-	public MapWorkCommunicator(Socket sock, MasterWorker master, int id) {
+	public ReduceWorkerCommunicator(Socket sock, MasterWorker master, int id) {
 		this.sock = sock;
 		this.master = master;
 		this.id = id;
@@ -61,7 +61,7 @@ public class MapWorkCommunicator {
 							if (request.equals("ResultPath")) {
 								try {
 									String path = (String) ois.readObject();
-									master.jobFinished(path, id);
+									master.reduceFinished(path, id);
 									running = false;
 								} catch (ClassNotFoundException e) {
 									// TODO Auto-generated catch block
@@ -81,7 +81,7 @@ public class MapWorkCommunicator {
 			thread.start();
 		}
 	
-	public void sendWork(String configPath, InputSplit440 input, int workID) {
+	public void sendWork(String configPath, String recordPath, ArrayList<Integer> recordLocs, int workID) {
 		try {
 			if (oos == null) {
 				oos = new ObjectOutputStream(sock.getOutputStream());
@@ -92,7 +92,8 @@ public class MapWorkCommunicator {
 			oos.writeObject("Start job");
 			oos.writeObject(workID);
 			oos.writeObject(configPath);
-			oos.writeObject(input);
+			oos.writeObject(recordPath);
+			oos.writeObject(recordLocs);
 			String response = (String)ois.readObject();
 			//Resume the thread if we should send work again
 			//TODO GET THIS TO RESUME LISTENING (what running = true is supposed to do)
@@ -113,32 +114,6 @@ public class MapWorkCommunicator {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/*public void shutDown() {
-		try {
-			if (oos == null) {
-				oos = new ObjectOutputStream(sock.getOutputStream());
-			}
-			if (ois == null) {
-				ois = new ObjectInputStream(sock.getInputStream());
-			}
-			oos.writeObject("Thanks for your work.");
-			oos.close();
-			ois.close();
-			sock.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}*/
-	
-	public void closeSocket() {
-		try {
-			sock.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

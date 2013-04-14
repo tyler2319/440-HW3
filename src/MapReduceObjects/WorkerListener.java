@@ -19,6 +19,9 @@ public class WorkerListener {
 	MapWorker worker;
 	
 	private Socket sock;
+	
+	private ObjectOutputStream oos;
+	private ObjectInputStream ois;
 	   
 	public WorkerListener(Socket sock, MapWorker worker) {
 		this.sock = sock;
@@ -42,14 +45,12 @@ public class WorkerListener {
 				while(running) {
 					if (!sock.isClosed()) {
 						Object request = null;
-						ObjectOutputStream oos = null;
-						ObjectInputStream ois = null;
 						try {
-							oos = new ObjectOutputStream(sock.getOutputStream());
-							ois = new ObjectInputStream(sock.getInputStream());
+							if (oos == null) oos = new ObjectOutputStream(sock.getOutputStream());
+							if (ois == null) ois = new ObjectInputStream(sock.getInputStream());
 							request = (String) ois.readObject();
 						} catch (IOException e) {
-							e.printStackTrace();
+							//e.printStackTrace();
 						} catch (ClassNotFoundException e) {
 							e.printStackTrace();
 						}
@@ -62,15 +63,17 @@ public class WorkerListener {
 							}
 						} else if (request.equals("Start job")) {
 							try {
+								int jobID;
 								String configPath;
 								InputSplit440 split;
 								try {
+									jobID = (Integer) ois.readObject();
 									configPath = (String) ois.readObject();
 									split = (InputSplit440) ois.readObject();
 									if (!worker.currentlyWorking()) {
 										oos.writeObject("Ready.");
 										try {
-											worker.startJob(configPath, split);
+											worker.startJob(configPath, split, jobID);
 										} catch (Exception e) {
 											e.printStackTrace();
 										}
@@ -84,6 +87,20 @@ public class WorkerListener {
 								e.printStackTrace();
 							}
 						} 
+						
+						/*else if (request.equals("Thanks for your work.")) {
+							System.out.println("Worker shutting down.");
+							try {
+								ois.close();
+								oos.close();
+								sock.close();
+								running = false;
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							
+						}*/
 					}
 				}
 			}
@@ -104,4 +121,16 @@ public class WorkerListener {
 		running = false;
 		thread = null;
 	}
+    
+    public synchronized void pause() {
+    	running = false;
+    }
+    
+    public synchronized void resume() {
+    	running = true;
+    }
+    
+    public ObjectOutputStream getObjectOutputStream() {
+    	return oos;
+    }
 }

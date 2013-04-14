@@ -27,7 +27,7 @@ public class WordcountConfig implements Configuration {
 	}
 	
 	public String[] getWorkerLocations() {
-		String[] locations = {"localhost:8889"};
+		String[] locations = {"localhost:8889", "localhost:8887"};
 		return locations;
 	}
 
@@ -42,11 +42,11 @@ public class WordcountConfig implements Configuration {
 	}
 
 	public int getNumOfMappers() {
-		return 1;
+		return 2;
 	}
 
 	public int getNumOfReducers() {
-		return 1;
+		return 2;
 	}
 	
 	public Class<? extends InputFormat440> getInputFormat() {

@@ -119,7 +119,7 @@ public class MapWorker {
 		});
 	}*/
 	
-	public void startJob(String configPath, InputSplit440 inputSplit) {
+	public void startJob(String configPath, InputSplit440 inputSplit, int jobID) {
 		JobRunner440 jr = new JobRunner440(configPath);
 		curConfig = jr.getConfig();
 		curSplit = inputSplit;
@@ -141,7 +141,7 @@ public class MapWorker {
 			}
 			
 			OutputCollecter output = jp.runJob();
-			writeOutputToFile(curConfig, output);
+			writeOutputToFile(curConfig, output, jobID);
 			 
 			currentlyWorking = false;
 		} else {
@@ -157,10 +157,10 @@ public class MapWorker {
 		return currentlyWorking;
 	}
 	
-	private void writeOutputToFile(Configuration config, OutputCollecter output) {
+	private void writeOutputToFile(Configuration config, OutputCollecter output, int jobID) {
 		String outputPath = config.getOutputFilePath();
 		String[] splitOnPeriod = outputPath.split("\\.");
-		splitOnPeriod[0] += "_map" + workerIndex;
+		splitOnPeriod[0] += "_map" + jobID;
 		
 		if (splitOnPeriod.length == 2) {
 			splitOnPeriod[1] = "." + splitOnPeriod[1];
@@ -181,13 +181,13 @@ public class MapWorker {
 	}
 	
 	private void sendResultToMaster(String result) {
-		System.out.println("Want to send result to master.");
-		Socket connection;
+		//Socket connection;
 		ObjectOutputStream oos;
-		listener.stop();
+		listener.pause();
 		try {
-			connection = socket;
-			oos = new ObjectOutputStream(connection.getOutputStream());
+			//connection = socket;
+			//oos = new ObjectOutputStream(connection.getOutputStream());
+			oos = listener.getObjectOutputStream();
 			oos.writeObject("ResultPath");
 			oos.writeObject(result);
 		} catch (UnknownHostException e) {
@@ -197,6 +197,7 @@ public class MapWorker {
 		}
 		try {
 			//listener.start();
+			listener.resume();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
