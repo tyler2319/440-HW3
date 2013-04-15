@@ -73,7 +73,7 @@ public class ReduceListener {
 										if (!worker.currentlyWorking()) {
 											oos.writeObject("Ready.");
 											try {
-												worker.startJob(configPath, recordPath, recordLocs, jobID);
+												worker.startJob(configPath, recordLocs, recordPath, jobID);
 											} catch (Exception e) {
 												e.printStackTrace();
 											}
