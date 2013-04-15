@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import ClassLoader.ClassLoader440;
 import Config.Configuration;
 import Interfaces.InputFormat440;
 import Interfaces.InputSplit440;
@@ -58,7 +59,17 @@ public class MapProcessor440<K1, V1, K2, V2> {
 		OutputCollecter<K2, V2> mapOutput = new OutputCollecter<K2, V2>();
 		
 		/* Get a map class going that we can instantiate */
-		Class<?> mapClass = config.getMapperClass();
+		String mapClassPath = config.getMapperClassPath();
+		String[] mapParts = mapClassPath.split("/");
+		String[] mapFileParts = mapParts[mapParts.length - 1].split("\\.");
+		
+		if (mapFileParts.length != 2 || !mapFileParts[1].equals("class")) {
+			System.out.println("Map file must be a valid Java class");
+			return null;
+		}
+		
+		ClassLoader440 cl = new ClassLoader440();
+		Class<?> mapClass = cl.getClass(mapClassPath, mapFileParts[0]);
 		Constructor<?> mapConst = null;
 		try {
 			mapConst = mapClass.getConstructor();
@@ -88,12 +99,21 @@ public class MapProcessor440<K1, V1, K2, V2> {
 		}
 		
 		OutputCollecter<K2, V2> combOutput = new OutputCollecter<K2, V2>();
-		Class<?> combClass = config.getCombinerClass();
+		String combClassPath = config.getCombinerClassPath();
 		
-		if (combClass == null) {
+		if (combClassPath == null) {
 			return mapOutput;
 		}
 		
+		String[] combParts = combClassPath.split("/");
+		String[] combFileParts = combParts[combParts.length - 1].split("\\.");
+		
+		if (combFileParts.length != 2 || !combFileParts[1].equals("class")) {
+			System.out.println("Configuration file must be a valid Java class");
+			return null;
+		}
+		
+		Class<?> combClass = cl.getClass(combClassPath, combFileParts[0]);
 		Constructor<?> combConst = null;
 		try {
 			combConst = combClass.getConstructor();

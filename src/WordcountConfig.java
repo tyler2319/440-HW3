@@ -10,16 +10,16 @@ public class WordcountConfig implements Configuration {
 		return "wordcount";
 	}
 
-	public Class<? extends Mapper> getMapperClass() {
-		return WordcountMap.class;
+	public String getMapperClassPath() {
+		return "/Users/Tyler/Documents/workspace/440-HW3/bin/WordcountMap.class";
 	}
 
-	public Class<? extends Reducer> getCombinerClass() {
-		return WordcountReduce.class;
+	public String getCombinerClassPath() {
+		return "/Users/Tyler/Documents/workspace/440-HW3/bin/WordcountReduce.class";
 	}
 
-	public Class<? extends Reducer> getReducerClass() {
-		return WordcountReduce.class;
+	public String getReducerClassPath() {
+		return "/Users/Tyler/Documents/workspace/440-HW3/bin/WordcountReduce.class";
 	}
 	
 	public String getMasterLocation() {

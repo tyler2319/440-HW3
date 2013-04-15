@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
+import ClassLoader.ClassLoader440;
 import Config.Configuration;
 import Interfaces.Reducer;
 
@@ -25,8 +26,18 @@ public class ReduceProcessor440<K, V> {
 	public OutputCollecter<K, V> runJob() {
 		OutputCollecter<K, V> result = new OutputCollecter<K, V>();
 		
-		/* Get a map class going that we can instantiate */
-		Class<?> reduceClass = config.getReducerClass();
+		String reduceClassPath = config.getReducerClassPath();
+		
+		String[] reduceParts = reduceClassPath.split("/");
+		String[] reduceFileParts = reduceParts[reduceParts.length - 1].split("\\.");
+		
+		if (reduceFileParts.length != 2 || !reduceFileParts[1].equals("class")) {
+			System.out.println("Configuration file must be a valid Java class");
+			return null;
+		}
+		
+		ClassLoader440 cl = new ClassLoader440();
+		Class<?> reduceClass = cl.getClass(reduceClassPath, reduceFileParts[0]);
 		Constructor<?> reduceConst = null;
 		try {
 			reduceConst = reduceClass.getConstructor();

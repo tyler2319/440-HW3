@@ -9,9 +9,9 @@ public interface Configuration {
 	
 	public String getJobName();
 	
-	public Class<? extends Mapper> getMapperClass();
-	public Class<? extends Reducer> getCombinerClass();
-	public Class<? extends Reducer> getReducerClass();
+	public String getMapperClassPath();
+	public String getCombinerClassPath();
+	public String getReducerClassPath();
 	
 	public String getMasterLocation();
 	public String[] getWorkerLocations();
