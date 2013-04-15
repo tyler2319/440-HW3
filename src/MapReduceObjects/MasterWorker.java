@@ -133,7 +133,7 @@ public class MasterWorker {
 						recordsSplitToReduceWorkers[index].add(numCharsSeen);
 						outWriter.write(curLine);
 						outWriter.newLine();
-						numCharsSeen += curLine.length() + 2;
+						numCharsSeen += curLine.length() + 1;
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -148,8 +148,9 @@ public class MasterWorker {
 			unperformedReduces.add(recordsSplitToReduceWorkers[i]);
 		}
 		
-		/*initReduceWorkers();
-		ArrayList<Integer> first = recordsSplitToReduceWorkers[0];
+		initReduceWorkers();
+		
+		/*ArrayList<Integer> first = recordsSplitToReduceWorkers[0];
 		BufferedReader br = null;
 		try {
 			for (Integer i: first) {

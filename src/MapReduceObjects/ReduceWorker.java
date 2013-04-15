@@ -1,14 +1,16 @@
 package MapReduceObjects;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import Config.Configuration;
-import Interfaces.InputFormat440;
-import Interfaces.InputSplit440;
 
 public class ReduceWorker {
 	
@@ -49,14 +51,44 @@ public class ReduceWorker {
 				if (!currentlyWorking) {
 					currentlyWorking = true;
 					ReduceProcessor440 jp = null;
+					OutputCollecter dataCollect = new OutputCollecter();
 					Class<?> K = curConfig.getOutputKeyClass();
 					Class<?> V = curConfig.getOutputValueClass();
+					
+					BufferedReader br = null;
+					try {
+						for (int i = 0; i < curSplit.size(); i++) {
+							br = Files.newBufferedReader(Paths.get(dataPath), Charset.defaultCharset());
+							br.skip(curSplit.get(i));
+							String record = br.readLine();
+							String[] recordSplit = record.split(",");
+							String keyStr = recordSplit[0].replace("<", "").trim();
+							String valueStr = recordSplit[1].replace(">", "").trim();
+							
+							Object key = null;
+							Object value = null;
+							
+							if (K.equals(String.class)) {
+								key = keyStr;
+							}
+							
+							if (V.equals(Integer.class)) {
+								value = Integer.valueOf(valueStr);
+							} else if (V.equals(String.class)) {
+								value = valueStr;
+							}
+							
+							dataCollect.collect(key, value);
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 
 					if (K.equals(String.class)) {
 						if (V.equals(Integer.class)) {
-							jp = new ReduceProcessor440<String, Integer>(curConfig, curSplit, dataPath);
+							jp = new ReduceProcessor440<String, Integer>(curConfig, dataCollect);
 						} else if (V.equals(String.class)) {
-							jp = new ReduceProcessor440<String, String>(curConfig, curSplit, dataPath);
+							jp = new ReduceProcessor440<String, String>(curConfig, dataCollect);
 						}
 					}
 					

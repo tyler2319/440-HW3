@@ -1,12 +1,7 @@
 package MapReduceObjects;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -19,36 +14,16 @@ import Interfaces.Reducer;
 public class ReduceProcessor440<K, V> {
 	
 	private Configuration config;
-	private ArrayList<Integer> split;
-	private String dataPath;
+	private OutputCollecter dataCollect;
 	
-	public ReduceProcessor440(Configuration config, ArrayList<Integer> split, String dataPath) {
+	public ReduceProcessor440(Configuration config, OutputCollecter dataCollect) {
 		this.config = config;
-		this.split = split;
-		this.dataPath = dataPath;
+		this.dataCollect = dataCollect;
 	}
 	
 	@SuppressWarnings("unchecked")
 	public OutputCollecter<K, V> runJob() {
-		OutputCollecter<K ,V> dataCollect = new OutputCollecter<K, V>();
 		OutputCollecter<K, V> result = new OutputCollecter<K, V>();
-		
-		BufferedReader br = null;
-		try {
-			for (Integer i: split) {
-				br = Files.newBufferedReader(Paths.get(dataPath), Charset.defaultCharset());
-				br.skip(i);
-				String record = br.readLine();
-				String[] recordSplit = record.split(",");
-				String keyStr = recordSplit[0].substring(1);
-				String valueStr = recordSplit[1].substring(0, recordSplit[1].length() - 1);
-				K key = (K) keyStr;
-				V value = (V) valueStr;
-				dataCollect.collect(key, value);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		
 		/* Get a map class going that we can instantiate */
 		Class<?> reduceClass = config.getReducerClass();

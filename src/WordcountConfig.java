@@ -42,11 +42,11 @@ public class WordcountConfig implements Configuration {
 	}
 
 	public int getNumOfMappers() {
-		return 25;
+		return 4;
 	}
 
 	public int getNumOfReducers() {
-		return 2;
+		return 1;
 	}
 	
 	public Class<? extends InputFormat440> getInputFormat() {
