@@ -17,7 +17,6 @@ public class MapWorker {
 	private WorkerListener listener;
 	private boolean currentlyWorking = false;
 	private Socket socket;
-	private int workerIndex;
 	
 	private Configuration curConfig;
 	private InputSplit440 curSplit;
@@ -76,11 +75,7 @@ public class MapWorker {
 		return input;
 	}
 	
-	/*public synchronized void startJob(String configPath, InputSplit440 inputSplit) throws Exception {
-		if (thread != null) {
-			throw new Exception("Worker busy");
-		}
-		
+	public synchronized void startJob(String configPath, InputSplit440 inputSplit, final int jobID) {
 		JobRunner440 jr = new JobRunner440(configPath);
 		curConfig = jr.getConfig();
 		curSplit = inputSplit;
@@ -88,7 +83,6 @@ public class MapWorker {
 			public void run() {
 				if (!currentlyWorking) {
 					currentlyWorking = true;
-					System.out.println("Working on job");
 					InputFormat440 input = getInputFormat(curConfig);
 					MapProcessor440 jp = null;
 					Class<?> K = curConfig.getOutputKeyClass();
@@ -105,7 +99,7 @@ public class MapWorker {
 					}
 					
 					OutputCollecter output = jp.runJob();
-					writeOutputToFile(curConfig, output);
+					writeOutputToFile(curConfig, output, jobID);
 					 
 					currentlyWorking = false;
 				} else {
@@ -117,40 +111,8 @@ public class MapWorker {
 				}
 			}
 		});
-	}*/
-	
-	public void startJob(String configPath, InputSplit440 inputSplit, int jobID) {
-		JobRunner440 jr = new JobRunner440(configPath);
-		curConfig = jr.getConfig();
-		curSplit = inputSplit;
-		if (!currentlyWorking) {
-			currentlyWorking = true;
-			InputFormat440 input = getInputFormat(curConfig);
-			MapProcessor440 jp = null;
-			Class<?> K = curConfig.getOutputKeyClass();
-			Class<?> V = curConfig.getOutputValueClass();
-			
-			if (isInputText) {
-				if (K.equals(String.class)) {
-					if (V.equals(Integer.class)) {
-						jp = new MapProcessor440<Long, String, String, Integer>(curConfig, curSplit);
-					} else if (V.equals(String.class)) {
-						jp = new MapProcessor440<Long, String, String, String>(curConfig, curSplit);
-					}
-				}
-			}
-			
-			OutputCollecter output = jp.runJob();
-			writeOutputToFile(curConfig, output, jobID);
-			 
-			currentlyWorking = false;
-		} else {
-			try {
-				throw new IllegalAccessException("Worker already working.");
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-		}
+		
+		thread.start();
 	}
 	
 	public boolean currentlyWorking() {
@@ -171,8 +133,6 @@ public class MapWorker {
 		for (int i = 0; i < splitOnPeriod.length; i++) {
 			newPath += splitOnPeriod[i];
 		}
-		
-		//Path p = Paths.get(newPath);
 		
 		RecordWriter440 rw = new RecordWriter440(config, output, newPath);
 		rw.writeOutput();

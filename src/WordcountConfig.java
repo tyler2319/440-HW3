@@ -32,13 +32,13 @@ public class WordcountConfig implements Configuration {
 	}
 
 	public String getInputFilePath() {
-		//return "/Users/Tyler/Documents/workspace/440-HW3/src/WordcountText.txt";
-		return "/Users/Justin/gitProjects/440-HW3/src/WordcountText.txt";
+		return "/Users/Tyler/Documents/workspace/440-HW3/src/WordcountText.txt";
+		//return "/Users/Justin/gitProjects/440-HW3/src/WordcountText.txt";
 	}
 
 	public String getOutputFilePath() {
-		//return "/Users/Tyler/Documents/workspace/440-HW3/src/WordcountOutput.txt";
-		return "/Users/Justin/gitProjects/440-HW3/src/WordcountOutput.txt";
+		return "/Users/Tyler/Documents/workspace/440-HW3/src/WordcountOutput.txt";
+		//return "/Users/Justin/gitProjects/440-HW3/src/WordcountOutput.txt";
 	}
 
 	public int getNumOfMappers() {
