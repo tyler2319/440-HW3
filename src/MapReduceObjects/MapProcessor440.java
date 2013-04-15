@@ -98,6 +98,8 @@ public class MapProcessor440<K1, V1, K2, V2> {
 			curRecord = rr.next();
 		}
 		
+		rr.close();
+		
 		OutputCollecter<K2, V2> combOutput = new OutputCollecter<K2, V2>();
 		String combClassPath = config.getCombinerClassPath();
 		
