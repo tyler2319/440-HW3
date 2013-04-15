@@ -37,7 +37,7 @@ public class RecordWriter440 {
 		
 		while(rec.hasNext()) {
 			Record curRec = (Record) rec.next();
-			String toPrint = "<" + curRec.getKey() + ", " + curRec.getValue() + ">";
+			String toPrint = "<" + curRec.getKey() + "," + curRec.getValue() + ">";
 			byte[] bytes = new byte[config.getRecordLength()];
 			
 			for(int i = 0; i < toPrint.length(); i++) {

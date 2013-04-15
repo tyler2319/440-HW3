@@ -13,8 +13,13 @@ public class MapWorkCommunicator {
 	//Thread in which the process will be run
 	private Thread thread;
 
-	//ServerSocket that will be accepting connections
+	private HeartbeatChecker checkIfAlive;
+	
+	//socket that will be accepting connections
 	private Socket sock;
+	
+	//Socket to call the worker to check if it's alive
+	private Socket heartbeatSock;
     
 	//boolean that determines whether the main thread should run
     private volatile boolean running;
@@ -26,8 +31,10 @@ public class MapWorkCommunicator {
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
 	
-	public MapWorkCommunicator(Socket sock, MasterWorker master, int id) {
+	public MapWorkCommunicator(Socket sock, Socket heartbeatSock, MasterWorker master, int id) {
 		this.sock = sock;
+		this.heartbeatSock = heartbeatSock;
+		checkIfAlive = new HeartbeatChecker(this.heartbeatSock);
 		this.master = master;
 		this.id = id;
 	}
@@ -110,41 +117,7 @@ public class MapWorkCommunicator {
 	}
 	
 	public boolean checkIfAlive() {
-		try {
-			if (oos == null) {
-				oos = new ObjectOutputStream(sock.getOutputStream());
-			}
-			if (ois == null) {
-				ois = new ObjectInputStream(sock.getInputStream());
-			}
-			oos.writeObject("Still alive?");
-			sock.setSoTimeout(5000);
-			String response;
-			try {
-				response = (String)ois.readObject();
-			//Worker didn't respond in time.
-			} catch (SocketTimeoutException e) {
-				sock.setSoTimeout(1000000);
-				return false;
-			}
-			//Resume the thread if we should send work again
-			if (response.equals("Yes")) {
-				System.out.println("Map worker " + id + " alive!");
-				try {
-					this.start();
-					return true;
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		//Shouldn't ever get here!
-		return false;
+		return checkIfAlive.isStillAlive();
 	}
 	
     /** stop()

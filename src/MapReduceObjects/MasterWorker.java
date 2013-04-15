@@ -70,12 +70,12 @@ public class MasterWorker {
 				}
 				completedMapPaths = new String[splits.length];
 				initMapWorkers();
-				/*workerCheck.scheduleAtFixedRate(new Runnable() {
+				workerCheck.scheduleAtFixedRate(new Runnable() {
 					  @Override
 					  public void run() {
 					    checkIfWorkersAlive();
 					  }
-					}, 0, 5, TimeUnit.SECONDS);*/
+					}, 0, 5, TimeUnit.SECONDS);
 				performMapWork();
 				workerCheck.shutdown();
 				initReduce();
@@ -125,7 +125,11 @@ public class MasterWorker {
 		        try {
 					while ( (curLine = br.readLine()) != null) {
 						//First map the current record to a reduce worker
-						int index = Math.abs(curLine.hashCode()) % config.getNumOfReducers();
+						//TODO Hash the key, not the entire line
+						String[] commaSplit = curLine.split(",");
+						//Skip the first character which is <
+						String key = commaSplit[0].substring(1);
+						int index = Math.abs(key.hashCode()) % config.getNumOfReducers();
 						recordsSplitToReduceWorkers[index].add(numCharsSeen);
 						outWriter.write(curLine);
 						outWriter.newLine();
@@ -144,8 +148,8 @@ public class MasterWorker {
 			unperformedReduces.add(recordsSplitToReduceWorkers[i]);
 		}
 		
-		initReduceWorkers();
-		/*ArrayList<Integer> first = recordsSplitToReduceWorkers[0];
+		/*initReduceWorkers();
+		ArrayList<Integer> first = recordsSplitToReduceWorkers[0];
 		BufferedReader br = null;
 		try {
 			for (Integer i: first) {
@@ -218,6 +222,8 @@ public class MasterWorker {
 		}
 	}
 	
+	//TODO Have two sockets per worker: 1 to send work back and forth, and another
+	//to keep a heart beat on the worker (i.e. check if it's alive)
 	private void initMapWorkers() {
 		sentOutMapWork = new InputSplit440[config.getWorkerLocations().length];
 		allMapWorkers = new MapWorkCommunicator[config.getWorkerLocations().length];
@@ -226,16 +232,19 @@ public class MasterWorker {
 			String[] curWorkerLoc = workerLocations[i].split(":");
 			String curWorkerHost = curWorkerLoc[0];
 			int curWorkerPort = Integer.parseInt(curWorkerLoc[1]);
+			int curHeartbeatPort = Integer.parseInt(curWorkerLoc[2]);
 			Socket connection;
+			Socket heartbeatSock;
 			ObjectOutputStream oos = null;
 			//ObjectInputStream ois = null;
 			
 			try {
 				connection = new Socket(curWorkerHost, curWorkerPort);
+				heartbeatSock = new Socket(curWorkerHost, curHeartbeatPort);
 				oos = new ObjectOutputStream(connection.getOutputStream());
 				//ois = new ObjectInputStream(connection.getInputStream());
 				oos.writeObject("mapworker");
-				MapWorkCommunicator mwp = new MapWorkCommunicator(connection, this, i);
+				MapWorkCommunicator mwp = new MapWorkCommunicator(connection, heartbeatSock, this, i);
 				allMapWorkers[i] = mwp;
 				avaliableMapWorkers.push(mwp);
 			} catch (IOException e) {
@@ -268,7 +277,7 @@ public class MasterWorker {
 			InputSplit440 curSplit = sentOutMapWork[i];
 			if (curSplit != null) {
 				boolean stillAlive = allMapWorkers[i].checkIfAlive();
-				System.out.println("Still alive? " + stillAlive);
+				System.out.println("Still alive index " + i + "? " + stillAlive);
 				if (!stillAlive) {
 					unperformedMaps.add(curSplit);
 					allMapWorkers[i].closeSocket();
