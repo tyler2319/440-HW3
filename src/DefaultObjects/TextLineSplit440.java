@@ -1,9 +1,8 @@
 package DefaultObjects;
 
-import java.nio.file.Path;
-
 import Interfaces.InputSplit440;
 
+@SuppressWarnings("serial")
 public class TextLineSplit440 implements InputSplit440 {
 	
 	private String path;
