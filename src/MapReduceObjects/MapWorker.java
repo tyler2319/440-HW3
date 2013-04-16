@@ -22,6 +22,7 @@ public class MapWorker {
 	private InputSplit440 curSplit;
 	
 	private boolean isInputText;
+	private boolean isInputImage;
 	
 	private Thread thread;
 	
@@ -43,6 +44,8 @@ public class MapWorker {
 	private void determineType(InputFormat440 input) {
 		if (input.getClass().equals(DefaultObjects.TextInputFormat440.class)) {
 			isInputText = true;
+		} else if (input.getClass().equals(DefaultObjects.ImageInputFormat440.class)) {
+			isInputImage = true;
 		}
 	}
 	
@@ -94,6 +97,14 @@ public class MapWorker {
 								jp = new MapProcessor440<Long, String, String, Integer>(curConfig, curSplit);
 							} else if (V.equals(String.class)) {
 								jp = new MapProcessor440<Long, String, String, String>(curConfig, curSplit);
+							}
+						}
+					} else if (isInputImage) {
+						if (K.equals(String.class)) {
+							if (V.equals(Integer.class)) {
+								jp = new MapProcessor440<Long, byte[], String, Integer>(curConfig, curSplit);
+							} else if (V.equals(String.class)) {
+								jp = new MapProcessor440<Long, byte[], String, String>(curConfig, curSplit);
 							}
 						}
 					}
