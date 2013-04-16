@@ -22,7 +22,8 @@ public class TextInputFormat440 implements InputFormat440<Long, String> {
 	}
 
 	public RecordReader440<Long, String> getRecordReader440(InputSplit440 split) {
-		return new LineRecordReader440((TextLineSplit440) split);
+		//return new LineRecordReader440((TextSplit440) split);
+		return new WordRecordReader440((TextSplit440) split);
 	}
 
 	public InputSplit440[] getSplits(int numSplits) {
@@ -46,15 +47,15 @@ public class TextInputFormat440 implements InputFormat440<Long, String> {
 		
 		int charsPerSplit = chars / numSplits;
 		
-		TextLineSplit440[] result = new TextLineSplit440[numSplits];
+		TextSplit440[] result = new TextSplit440[numSplits];
 		//Path path = Paths.get(pathStr);
 		
 		for(int i = 0; i < numSplits - 1; i++) {
-			result[i] = new TextLineSplit440(pathStr, i * charsPerSplit, charsPerSplit);
+			result[i] = new TextSplit440(pathStr, i * charsPerSplit, charsPerSplit);
 		}
 		int finalStart = (numSplits - 1) * charsPerSplit;
 		int finalLength = chars - (finalStart);
-		result[numSplits - 1] = new TextLineSplit440(pathStr, finalStart, finalLength);
+		result[numSplits - 1] = new TextSplit440(pathStr, finalStart, finalLength);
 		
 		return result;
 	}

@@ -11,11 +11,11 @@ import MapReduceObjects.Record;
 
 public class LineRecordReader440 implements RecordReader440<Long, String> {
 	
-	private TextLineSplit440 split;
+	private TextSplit440 split;
 	private int pos;
 	private BufferedReader br;
 	
-	public LineRecordReader440(TextLineSplit440 split) {
+	public LineRecordReader440(TextSplit440 split) {
 		this.split = split;
 		this.pos = 0;
 		

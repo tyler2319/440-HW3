@@ -11,15 +11,18 @@ public class WordcountConfig implements Configuration {
 	}
 
 	public String getMapperClassPath() {
-		return "/Users/Tyler/Documents/workspace/440-HW3/bin/WordcountMap.class";
+		//return "/Users/Tyler/Documents/workspace/440-HW3/bin/WordcountMap.class";
+		return "/Users/Justin/gitProjects/440-HW3/bin/WordcountMap.class";
 	}
 
 	public String getCombinerClassPath() {
-		return "/Users/Tyler/Documents/workspace/440-HW3/bin/WordcountReduce.class";
+		//return "/Users/Tyler/Documents/workspace/440-HW3/bin/WordcountReduce.class";
+		return "/Users/Justin/gitProjects/440-HW3/bin/WordcountReduce.class";
 	}
 
 	public String getReducerClassPath() {
-		return "/Users/Tyler/Documents/workspace/440-HW3/bin/WordcountReduce.class";
+		//return "/Users/Tyler/Documents/workspace/440-HW3/bin/WordcountReduce.class";
+		return "/Users/Justin/gitProjects/440-HW3/bin/WordcountReduce.class";
 	}
 	
 	public String getMasterLocation() {
@@ -32,13 +35,13 @@ public class WordcountConfig implements Configuration {
 	}
 
 	public String getInputFilePath() {
-		return "/Users/Tyler/Documents/workspace/440-HW3/src/WordcountText.txt";
-		//return "/Users/Justin/gitProjects/440-HW3/src/WordcountText.txt";
+		//return "/Users/Tyler/Documents/workspace/440-HW3/src/WordcountText.txt";
+		return "/Users/Justin/gitProjects/440-HW3/src/WordcountText.txt";
 	}
 
 	public String getOutputFilePath() {
-		return "/Users/Tyler/Documents/workspace/440-HW3/src/WordcountOutput.txt";
-		//return "/Users/Justin/gitProjects/440-HW3/src/WordcountOutput.txt";
+		//return "/Users/Tyler/Documents/workspace/440-HW3/src/WordcountOutput.txt";
+		return "/Users/Justin/gitProjects/440-HW3/src/WordcountOutput.txt";
 	}
 
 	public int getNumOfMappers() {

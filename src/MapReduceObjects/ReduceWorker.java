@@ -61,6 +61,7 @@ public class ReduceWorker {
 							br = Files.newBufferedReader(Paths.get(dataPath), Charset.defaultCharset());
 							br.skip(curSplit.get(i));
 							String record = br.readLine();
+							br.close();
 							String[] recordSplit = record.split(",");
 							String keyStr = recordSplit[0].replace("<", "").trim();
 							String valueStr = recordSplit[1].replace(">", "").trim();
@@ -110,6 +111,7 @@ public class ReduceWorker {
 	}
 	
 	private void writeOutputToFile(Configuration config, OutputCollecter output, int jobID) {
+		System.out.println("About to write output file.");
 		String outputPath = config.getOutputFilePath();
 		String[] splitOnPeriod = outputPath.split("\\.");
 		splitOnPeriod[0] += "" + jobID;

@@ -70,12 +70,12 @@ public class MasterWorker {
 				}
 				completedMapPaths = new String[splits.length];
 				initMapWorkers();
-				workerCheck.scheduleAtFixedRate(new Runnable() {
+				/*workerCheck.scheduleAtFixedRate(new Runnable() {
 					  @Override
 					  public void run() {
 					    checkIfWorkersAlive();
 					  }
-					}, 0, 5, TimeUnit.SECONDS);
+					}, 0, 5, TimeUnit.SECONDS);*/
 				performMapWork();
 				workerCheck.shutdown();
 				initReduce();
@@ -133,7 +133,7 @@ public class MasterWorker {
 						recordsSplitToReduceWorkers[index].add(numCharsSeen);
 						outWriter.write(curLine);
 						outWriter.newLine();
-						numCharsSeen += curLine.length() + 1;
+						numCharsSeen += config.getRecordLength() + 1;
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -241,7 +241,8 @@ public class MasterWorker {
 			
 			try {
 				connection = new Socket(curWorkerHost, curWorkerPort);
-				heartbeatSock = new Socket(curWorkerHost, curHeartbeatPort);
+				//heartbeatSock = new Socket(curWorkerHost, curHeartbeatPort);
+				heartbeatSock = null;
 				oos = new ObjectOutputStream(connection.getOutputStream());
 				//ois = new ObjectInputStream(connection.getInputStream());
 				oos.writeObject("mapworker");
