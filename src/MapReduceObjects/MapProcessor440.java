@@ -27,30 +27,15 @@ public class MapProcessor440<K1, V1, K2, V2> {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public OutputCollecter<K2, V2> runJob() {
+	public OutputCollecter<K2, V2> runJob() throws NoSuchMethodException, 
+	SecurityException, InstantiationException, IllegalAccessException, 
+	IllegalArgumentException, InvocationTargetException {
 		Class<?> inputClass = config.getInputFormat();
 		Constructor<?> inputConst = null;
-		try {
-			inputConst = inputClass.getConstructor();
-		} catch (NoSuchMethodException e1) {
-			e1.printStackTrace();
-		} catch (SecurityException e1) {
-			e1.printStackTrace();
-		}
-		
+		inputConst = inputClass.getConstructor();
 		InputFormat440<K1, V1> input = null;
-		try {
-			input = (InputFormat440<K1, V1>) inputConst.newInstance();
-			input.configure(config);
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+		input = (InputFormat440<K1, V1>) inputConst.newInstance();
+		input.configure(config);
 		
 		RecordReader440<K1, V1> rr = input.getRecordReader440(split);
 		Record<K1, V1> curRecord = rr.next();
@@ -71,27 +56,10 @@ public class MapProcessor440<K1, V1, K2, V2> {
 		ClassLoader440 cl = new ClassLoader440();
 		Class<?> mapClass = cl.getClass(mapClassPath, mapFileParts[0]);
 		Constructor<?> mapConst = null;
-		try {
-			mapConst = mapClass.getConstructor();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		}
-		
+		mapConst = mapClass.getConstructor();
 		/* Get a mapper up and running so we can run it */
 		Mapper<K1, V1, K2, V2> map = null;
-		try {
-			map = (Mapper<K1, V1, K2, V2>) mapConst.newInstance();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+		map = (Mapper<K1, V1, K2, V2>) mapConst.newInstance();
 		
 		while (curRecord != null) {
 			map.map(curRecord.getKey(), curRecord.getValue(), mapOutput);
@@ -117,26 +85,10 @@ public class MapProcessor440<K1, V1, K2, V2> {
 		
 		Class<?> combClass = cl.getClass(combClassPath, combFileParts[0]);
 		Constructor<?> combConst = null;
-		try {
-			combConst = combClass.getConstructor();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		}
+		combConst = combClass.getConstructor();
 		
 		Reducer<K2, V2, K2, V2> combiner = null;
-		try {
-			combiner = (Reducer<K2, V2, K2, V2>) combConst.newInstance();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
+		combiner = (Reducer<K2, V2, K2, V2>) combConst.newInstance();
 		
 		HashMap<K2, ArrayList<V2>> hm = mapOutput.groupOutput();
 		Set<K2> keys = hm.keySet();

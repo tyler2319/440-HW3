@@ -107,7 +107,6 @@ public class ReduceWorkerCommunicator {
 			oos.writeObject(recordLocs);
 			String response = (String)ois.readObject();
 			//Resume the thread if we should send work again
-			//TODO GET THIS TO RESUME LISTENING (what running = true is supposed to do)
 			if (response.equals("Ready.")) {
 				try {
 					this.start();

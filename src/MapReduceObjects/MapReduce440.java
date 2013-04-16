@@ -18,10 +18,14 @@ public class MapReduce440 {
 	private boolean isRunning = true;
 	private int port;
 	private int backlog;
+	private int heartbeatPort;
+	private int heartbeatBacklog;
 
-	public MapReduce440(int port, int backlog) {
+	public MapReduce440(int port, int backlog, int heartbeatPort, int heartbeatBacklog) {
 		this.port = port;
 		this.backlog = backlog;
+		this.heartbeatPort = heartbeatPort;
+		this.heartbeatBacklog = heartbeatBacklog;
 	}
 	/** receiveCommands()
 	 * 
@@ -31,7 +35,7 @@ public class MapReduce440 {
 	public void receiveCommands() throws Exception {
 		String result = "";
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		MapReduceListener mrl = new MapReduceListener(port, backlog);
+		MapReduceListener mrl = new MapReduceListener(port, backlog, heartbeatPort, heartbeatBacklog);
 		mrl.start();
 		
 		while(isRunning) {

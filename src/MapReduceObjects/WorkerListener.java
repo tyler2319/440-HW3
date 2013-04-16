@@ -13,6 +13,8 @@ public class WorkerListener {
 	//Thread in which the process will be run
 	private Thread thread;
 		
+	private HeartbeatResponder hbr;
+	
 	//boolean that determines whether the main thread should run
 	private volatile boolean running;
 	
@@ -23,7 +25,16 @@ public class WorkerListener {
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
 	   
-	public WorkerListener(Socket sock, MapWorker worker) {
+	public WorkerListener(Socket sock, MapWorker worker, ObjectOutputStream oos, ObjectInputStream ois, int heartbeatPort, int heartbeatBacklog) {
+		hbr = new HeartbeatResponder(heartbeatPort, heartbeatBacklog);
+		try {
+			hbr.start();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		this.oos = oos;
+		this.ois = ois;
 		this.sock = sock;
 		this.worker = worker;
 	}
@@ -55,13 +66,7 @@ public class WorkerListener {
 							e.printStackTrace();
 						}
 						if (request == null) {}
-						else if (request.equals("Still alive?")) {
-							try {
-								oos.writeObject("Yes");
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						} else if (request.equals("Start job")) {
+						else if (request.equals("Start job")) {
 							try {
 								int jobID;
 								String configPath;

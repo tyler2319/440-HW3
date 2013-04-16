@@ -17,7 +17,10 @@ public class HeartbeatChecker {
 	
 	private boolean isStillAlive = false;
 	
-	public HeartbeatChecker(Socket sock) {
+	private MapWorkCommunicator mwp;
+	
+	public HeartbeatChecker(Socket sock, MapWorkCommunicator mwp) {
+		this.mwp = mwp;
 		this.sock = sock;
 	}
 	
@@ -52,6 +55,7 @@ public class HeartbeatChecker {
 					if (ois == null) {
 						ois = new ObjectInputStream(sock.getInputStream());
 					}
+					System.out.println("Waiting for heartbeat.");
 					oos.writeObject("Still alive?");
 					sock.setSoTimeout(5000);
 					String response = "";
@@ -66,7 +70,7 @@ public class HeartbeatChecker {
 						isStillAlive = true;
 					}
 				} catch (IOException e) {
-					e.printStackTrace();
+					mwp.shutDownSelf();
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -88,4 +92,8 @@ public class HeartbeatChecker {
 		}
 		thread = null;
 	}
+    
+    public Socket getSocket() {
+    	return sock;
+    }
 }

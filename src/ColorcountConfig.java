@@ -8,15 +8,18 @@ public class ColorcountConfig implements Configuration {
 	}
 
 	public String getMapperClassPath() {
-		return "/Users/Tyler/Documents/workspace/440-HW3/bin/ColorcountMap.class";
+		//return "/Users/Tyler/Documents/workspace/440-HW3/bin/ColorcountMap.class";
+		return "/Users/Justin/gitProjects/440-HW3/bin/ColorcountMap.class";
 	}
 
 	public String getCombinerClassPath() {
-		return "/Users/Tyler/Documents/workspace/440-HW3/bin/ColorcountReduce.class";
+		//return "/Users/Tyler/Documents/workspace/440-HW3/bin/ColorcountReduce.class";
+		return "/Users/Justin/gitProjects/440-HW3/bin/ColorcountReduce.class";
 	}
 
 	public String getReducerClassPath() {
-		return "/Users/Tyler/Documents/workspace/440-HW3/bin/ColorcountReduce.class";
+		//return "/Users/Tyler/Documents/workspace/440-HW3/bin/ColorcountReduce.class";
+		return "/Users/Justin/gitProjects/440-HW3/bin/ColorcountReduce.class";
 	}
 	
 	public String getMasterLocation() {
@@ -29,13 +32,13 @@ public class ColorcountConfig implements Configuration {
 	}
 
 	public String getInputFilePath() {
-		return "/Users/Tyler/Documents/workspace/440-HW3/yankees.jpg";
-		//return "/Users/Justin/gitProjects/440-HW3/src/WordcountText.txt";
+		//return "/Users/Tyler/Documents/workspace/440-HW3/yankees.jpg";
+		return "/Users/Justin/gitProjects/440-HW3/yankees.jpg";
 	}
 
 	public String getOutputFilePath() {
-		return "/Users/Tyler/Documents/workspace/440-HW3/src/ColorcountOutput.txt";
-		//return "/Users/Justin/gitProjects/440-HW3/src/WordcountOutput.txt";
+		//return "/Users/Tyler/Documents/workspace/440-HW3/src/ColorcountOutput.txt";
+		return "/Users/Justin/gitProjects/440-HW3/src/ColorcountOutput.txt";
 	}
 
 	public int getNumOfMappers() {

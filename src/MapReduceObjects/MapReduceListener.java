@@ -2,6 +2,7 @@ package MapReduceObjects;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -18,15 +19,23 @@ public class MapReduceListener {
     private volatile boolean running;
     
     //List of connections made to the master ProcessManager
-    private ArrayList<Socket> sockets = new ArrayList<Socket>();
+    private ArrayList<SocketContainer> sockets = new ArrayList<SocketContainer>();
     
     //port, backlog for the Socket connection
     private int port;
     private int backlog;
     
-    public MapReduceListener(int port, int backlog) {
+    private int heartbeatPort;
+    private int heartbeatBacklog;
+    
+    private ObjectOutputStream oos;
+    private ObjectInputStream ois;
+    
+    public MapReduceListener(int port, int backlog, int heartbeatPort, int heartbeatBacklog) {
 		this.port = port;
 		this.backlog = backlog;
+		this.heartbeatPort = heartbeatPort;
+		this.heartbeatBacklog = heartbeatBacklog;
 	}
     
     public synchronized void start() throws Exception {
@@ -47,16 +56,27 @@ public class MapReduceListener {
 					Socket s = null;
 					try {
 						s = server.accept();
-						sockets.add(s);
+						SocketContainer tempCont = new SocketContainer(s);
+						if (sockets.contains(tempCont)) {
+							int index = sockets.indexOf(tempCont);
+							s = sockets.get(index).getSocket();
+							ois = sockets.get(index).getInputStream();
+							oos = sockets.get(index).getOutputStream();
+						}
+						else {
+							sockets.add(tempCont);
+							ois = tempCont.getInputStream();
+							oos = tempCont.getOutputStream();
+						}
 					} catch (IOException e) { }
 					
-					ObjectInputStream input = null;
 					try {
-						input = new ObjectInputStream(s.getInputStream());
-						String command = (String) input.readObject();
+						//if (ois == null) ois = new ObjectInputStream(s.getInputStream());
+						//if (oos == null) oos = new ObjectOutputStream(s.getOutputStream());
+						String command = (String) ois.readObject();
 						if (command.equals("master")) {
 							System.out.println("master called on port " + port);
-							String config = (String) input.readObject();
+							String config = (String) ois.readObject();
 							MasterWorker mw = new MasterWorker(config);
 							
 							try {
@@ -66,7 +86,8 @@ public class MapReduceListener {
 							}
 						} else if (command.equals("mapworker")) {
 							System.out.println("Map worker called on port" + port);
-							MapWorker mw = new MapWorker(s);
+							MapWorker mw = new MapWorker(s, oos, ois, heartbeatPort, heartbeatBacklog);
+							oos.writeObject("okay");
 						} else if (command.equals("reduceworker")) {
 							System.out.println("Reduce worker called on port" + port);
 							ReduceWorker rw = new ReduceWorker(s);
@@ -100,10 +121,6 @@ public class MapReduceListener {
 			} catch (Exception e) { }
 		}
 		thread = null;
-	}
-
-	public synchronized ArrayList<Socket> getScokets() {
-		return sockets;
 	}
 
 }

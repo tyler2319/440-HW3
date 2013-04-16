@@ -54,13 +54,7 @@ public class ReduceListener {
 								e.printStackTrace();
 							}
 							
-							if (request.equals("Still alive?")) {
-								try {
-									oos.writeObject("Yes");
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
-							} else if (request.equals("Start job")) {
+							if (request.equals("Start job")) {
 								try {
 									int jobID;
 									String configPath, recordPath;
