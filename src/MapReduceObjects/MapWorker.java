@@ -63,10 +63,10 @@ public class MapWorker {
 	}
 	
 	public synchronized void startJob(String configPath, InputSplit440 inputSplit, final int jobID) {
-		if (jobID == 1 || jobID == 3) {
+		/*if (jobID == 1 || jobID == 3) {
 			sendResultToMaster("Error");
 			return;
-		}
+		}*/
 		JobRunner440 jr = new JobRunner440(configPath);
 		curConfig = jr.getConfig();
 		curSplit = inputSplit;
