@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import Config.Configuration;
@@ -22,8 +21,8 @@ public class TextInputFormat440 implements InputFormat440<Long, String> {
 	}
 
 	public RecordReader440<Long, String> getRecordReader440(InputSplit440 split) {
-		//return new LineRecordReader440((TextSplit440) split);
-		return new WordRecordReader440((TextSplit440) split);
+		return new LineRecordReader440((TextSplit440) split);
+		//return new WordRecordReader440((TextSplit440) split);
 	}
 
 	public InputSplit440[] getSplits(int numSplits) {

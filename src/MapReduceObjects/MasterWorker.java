@@ -70,12 +70,12 @@ public class MasterWorker {
 				}
 				completedMapPaths = new String[splits.length];
 				initMapWorkers();
-				/*workerCheck.scheduleAtFixedRate(new Runnable() {
+				workerCheck.scheduleAtFixedRate(new Runnable() {
 					  @Override
 					  public void run() {
 					    checkIfWorkersAlive();
 					  }
-					}, 0, 5, TimeUnit.SECONDS);*/
+					}, 0, 5, TimeUnit.SECONDS);
 				performMapWork();
 				workerCheck.shutdown();
 				initReduce();
@@ -241,8 +241,7 @@ public class MasterWorker {
 			
 			try {
 				connection = new Socket(curWorkerHost, curWorkerPort);
-				//heartbeatSock = new Socket(curWorkerHost, curHeartbeatPort);
-				heartbeatSock = null;
+				heartbeatSock = new Socket(curWorkerHost, curHeartbeatPort);
 				oos = new ObjectOutputStream(connection.getOutputStream());
 				//ois = new ObjectInputStream(connection.getInputStream());
 				oos.writeObject("mapworker");

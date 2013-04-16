@@ -3,13 +3,13 @@ package DefaultObjects;
 import Interfaces.InputSplit440;
 
 @SuppressWarnings("serial")
-public class TextLineSplit440 implements InputSplit440 {
-	
+public class ImageSplit440 implements InputSplit440 {
+
 	private String path;
 	private int start;
 	private int length;
 	
-	public TextLineSplit440(String path, int start, int length) {
+	public ImageSplit440(String path, int start, int length) {
 		this.path = path;
 		this.start = start;
 		this.length = length;
@@ -26,4 +26,5 @@ public class TextLineSplit440 implements InputSplit440 {
 	public int getStart() {
 		return start;
 	}
+
 }

@@ -1,7 +1,5 @@
 import Config.Configuration;
 import Interfaces.InputFormat440;
-import Interfaces.Mapper;
-import Interfaces.Reducer;
 
 @SuppressWarnings("rawtypes")
 public class WordcountConfig implements Configuration {

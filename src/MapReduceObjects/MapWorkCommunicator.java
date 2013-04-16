@@ -34,7 +34,7 @@ public class MapWorkCommunicator {
 	public MapWorkCommunicator(Socket sock, Socket heartbeatSock, MasterWorker master, int id) {
 		this.sock = sock;
 		this.heartbeatSock = heartbeatSock;
-		//checkIfAlive = new HeartbeatChecker(this.heartbeatSock);
+		checkIfAlive = new HeartbeatChecker(this.heartbeatSock);
 		this.master = master;
 		this.id = id;
 	}
