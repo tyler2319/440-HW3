@@ -6,8 +6,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import Interfaces.InputSplit440;
-
 public class ReduceListener {
 	//Thread in which the process will be run
 		private Thread thread;
@@ -38,6 +36,7 @@ public class ReduceListener {
 				 * Listens for requests from the master.
 				 * Interprets the requests and responds to them
 				 */
+				@SuppressWarnings("unchecked")
 				@Override
 				public void run() {
 					running = true;

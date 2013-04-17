@@ -16,6 +16,7 @@ import Interfaces.InputFormat440;
 import Interfaces.InputSplit440;
 import Interfaces.RecordReader440;
 
+@SuppressWarnings("rawtypes")
 public class ImageInputFormat440 implements InputFormat440 {
 	
 private Configuration config;
@@ -60,9 +61,9 @@ private Configuration config;
 		
 		for(int i = 0; i < numPixels; i++) {
 			byte[] pixel = new byte[3];
-			pixel[0] = bytes[3*i];
+			pixel[2] = bytes[3*i];
 			pixel[1] = bytes[3*i + 1];
-			pixel[2] = bytes[3*i + 2];
+			pixel[0] = bytes[3*i + 2];
 			try {
 				os.write(pixel);
 			} catch (IOException e) {

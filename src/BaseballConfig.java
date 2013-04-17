@@ -1,7 +1,6 @@
 import Config.Configuration;
 import Interfaces.InputFormat440;
 
-
 public class BaseballConfig implements Configuration{
 	public String getJobName() {
 		return "sluggingPct";
@@ -49,6 +48,7 @@ public class BaseballConfig implements Configuration{
 		return 4;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public Class<? extends InputFormat440> getInputFormat() {
 		return DefaultObjects.TextInputFormat440.class;
 	}

@@ -15,8 +15,11 @@ import Interfaces.Reducer;
 public class ReduceProcessor440<K, V> {
 	
 	private Configuration config;
+	
+	@SuppressWarnings("rawtypes")
 	private OutputCollecter dataCollect;
 	
+	@SuppressWarnings("rawtypes")
 	public ReduceProcessor440(Configuration config, OutputCollecter dataCollect) {
 		this.config = config;
 		this.dataCollect = dataCollect;

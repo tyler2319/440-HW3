@@ -1,8 +1,5 @@
-import java.util.StringTokenizer;
-
 import Interfaces.Mapper;
 import MapReduceObjects.OutputCollecter;
-
 
 public class BaseballMap implements Mapper<Long, String, String, Integer>{
 	public void map(Long key, String value, OutputCollecter<String, Integer> output) {

@@ -1,8 +1,6 @@
 package Config;
 
 import Interfaces.InputFormat440;
-import Interfaces.Mapper;
-import Interfaces.Reducer;
 
 @SuppressWarnings("rawtypes")
 public interface Configuration {

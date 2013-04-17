@@ -5,9 +5,9 @@ public class ColorcountMap implements Mapper<Long, byte[], String, Integer> {
 	private final static Integer one = new Integer(1);
 
 	public void map(Long key, byte[] value, OutputCollecter<String, Integer> output) {
-		byte blue = value[0];
+		byte red = value[0];
 		byte green = value[1];
-		byte red = value[2];
+		byte blue = value[2];
 		
 		String color;
 		

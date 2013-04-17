@@ -4,11 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-
-import Interfaces.InputSplit440;
-
 
 public class MapWorkCommunicator {
 	//Thread in which the process will be run

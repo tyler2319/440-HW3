@@ -7,8 +7,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import Config.Configuration;
 import Interfaces.InputFormat440;
@@ -17,7 +15,6 @@ import Interfaces.InputSplit440;
 public class MapWorker {
 	private WorkerListener listener;
 	private boolean currentlyWorking = false;
-	private Socket socket;
 	
 	private Configuration curConfig;
 	private InputSplit440 curSplit;
@@ -29,7 +26,6 @@ public class MapWorker {
 	
 	/* needs to take whatever is needed to start listening */
 	public MapWorker(Socket socket, ObjectOutputStream oos, ObjectInputStream ois, int heartbeatPort, int heartbeatBacklog) {
-		this.socket = socket;
 		listener = new WorkerListener(socket, this, oos, ois, heartbeatPort, heartbeatBacklog);
 		
 		try {
@@ -39,6 +35,7 @@ public class MapWorker {
 		}
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private void determineType(InputFormat440 input) {
 		if (input.getClass().equals(DefaultObjects.TextInputFormat440.class)) {
 			isInputText = true;
@@ -47,6 +44,7 @@ public class MapWorker {
 		}
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private InputFormat440 getInputFormat(Configuration config) throws 
 		NoSuchMethodException, SecurityException, InstantiationException,
 		IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -71,10 +69,12 @@ public class MapWorker {
 		curConfig = jr.getConfig();
 		curSplit = inputSplit;
 		thread = new Thread(new Runnable() {
+			@SuppressWarnings("rawtypes")
 			public void run() {
 				if (!currentlyWorking) {
 					currentlyWorking = true;
 					try {
+						@SuppressWarnings("unused")
 						InputFormat440 input = getInputFormat(curConfig);
 					} catch (NoSuchMethodException | SecurityException
 							| InstantiationException | IllegalAccessException
@@ -147,6 +147,7 @@ public class MapWorker {
 		return currentlyWorking;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private void writeOutputToFile(Configuration config, OutputCollecter output, int jobID) {
 		String outputPath = config.getOutputFilePath();
 		String[] splitOnPeriod = outputPath.split("\\.");

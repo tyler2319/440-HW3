@@ -2,12 +2,9 @@ package MapReduceObjects;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -87,6 +84,7 @@ public class MasterWorker {
 		thread.start();
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void initReduce() {
 		//Initialize reduce variables
 		recordsSplitToReduceWorkers = new ArrayList[config.getNumOfReducers()];

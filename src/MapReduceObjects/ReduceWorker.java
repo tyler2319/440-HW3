@@ -16,8 +16,6 @@ public class ReduceWorker {
 	
 	private boolean currentlyWorking = false;
 	
-	private Socket sock;
-	
 	private ReduceListener listener;
 	
 	private Configuration curConfig;
@@ -25,13 +23,8 @@ public class ReduceWorker {
 	private String dataPath;
 	
 	private Thread thread;
-	
-	private String configPath;
-	private String recordPath;
-	private int id;
 
 	public ReduceWorker(Socket sock) {
-		this.sock = sock;
 		listener = new ReduceListener(sock, this);
 		
 		try {
@@ -47,6 +40,7 @@ public class ReduceWorker {
 		curSplit = inputSplit;
 		dataPath = dp;
 		thread = new Thread(new Runnable() {
+			@SuppressWarnings({ "unchecked", "rawtypes" })
 			public void run() {
 				if (!currentlyWorking) {
 					currentlyWorking = true;
@@ -110,6 +104,7 @@ public class ReduceWorker {
 		thread.start();
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private void writeOutputToFile(Configuration config, OutputCollecter output, int jobID) {
 		System.out.println("About to write output file.");
 		String outputPath = config.getOutputFilePath();
