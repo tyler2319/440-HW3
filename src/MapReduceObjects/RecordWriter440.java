@@ -3,12 +3,8 @@ package MapReduceObjects;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
 
 import Config.Configuration;
 

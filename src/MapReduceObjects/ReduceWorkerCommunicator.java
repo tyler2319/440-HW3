@@ -6,8 +6,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import Interfaces.InputSplit440;
-
 public class ReduceWorkerCommunicator {
 	//Thread in which the process will be run
 	private Thread thread;

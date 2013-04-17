@@ -43,12 +43,13 @@ public class MapReduceListener {
 			throw new Exception("MapReduceListener already started.");
 		}
 
-		server = new ServerSocket(port, backlog);
+		server = new ServerSocket(port, backlog); 
 		thread = new Thread(new Runnable() {
 			/** run()
 			 * 
 			 * Accepts connections and adds it to the managed list
 			 */
+			@SuppressWarnings("unused")
 			@Override
 			public void run() {
 				running = true;

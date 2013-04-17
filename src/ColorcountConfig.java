@@ -8,18 +8,18 @@ public class ColorcountConfig implements Configuration {
 	}
 
 	public String getMapperClassPath() {
-		//return "/Users/Tyler/Documents/workspace/440-HW3/bin/ColorcountMap.class";
-		return "/Users/Justin/gitProjects/440-HW3/bin/ColorcountMap.class";
+		return "/Users/Tyler/Documents/workspace/440-HW3/bin/ColorcountMap.class";
+		//return "/Users/Justin/gitProjects/440-HW3/bin/ColorcountMap.class";
 	}
 
 	public String getCombinerClassPath() {
-		//return "/Users/Tyler/Documents/workspace/440-HW3/bin/ColorcountReduce.class";
-		return "/Users/Justin/gitProjects/440-HW3/bin/ColorcountReduce.class";
+		return "/Users/Tyler/Documents/workspace/440-HW3/bin/ColorcountReduce.class";
+		//return "/Users/Justin/gitProjects/440-HW3/bin/ColorcountReduce.class";
 	}
 
 	public String getReducerClassPath() {
-		//return "/Users/Tyler/Documents/workspace/440-HW3/bin/ColorcountReduce.class";
-		return "/Users/Justin/gitProjects/440-HW3/bin/ColorcountReduce.class";
+		return "/Users/Tyler/Documents/workspace/440-HW3/bin/ColorcountReduce.class";
+		//return "/Users/Justin/gitProjects/440-HW3/bin/ColorcountReduce.class";
 	}
 	
 	public String getMasterLocation() {
@@ -27,18 +27,18 @@ public class ColorcountConfig implements Configuration {
 	}
 	
 	public String[] getWorkerLocations() {
-		String[] locations = {"localhost:8889:8880", "localhost:8887:8881"};
+		String[] locations = {"localhost:8887:8880", "localhost:8889:8881"};
 		return locations;
 	}
 
 	public String getInputFilePath() {
-		//return "/Users/Tyler/Documents/workspace/440-HW3/yankees.jpg";
-		return "/Users/Justin/gitProjects/440-HW3/yankees.jpg";
+		return "/Users/Tyler/Documents/workspace/440-HW3/yankees.jpg";
+		//return "/Users/Justin/gitProjects/440-HW3/yankees.jpg";
 	}
 
 	public String getOutputFilePath() {
-		//return "/Users/Tyler/Documents/workspace/440-HW3/src/ColorcountOutput.txt";
-		return "/Users/Justin/gitProjects/440-HW3/src/ColorcountOutput.txt";
+		return "/Users/Tyler/Documents/workspace/440-HW3/src/ColorcountOutput.txt";
+		//return "/Users/Justin/gitProjects/440-HW3/src/ColorcountOutput.txt";
 	}
 
 	public int getNumOfMappers() {
@@ -49,6 +49,7 @@ public class ColorcountConfig implements Configuration {
 		return 2;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public Class<? extends InputFormat440> getInputFormat() {
 		return DefaultObjects.ImageInputFormat440.class;
 	}

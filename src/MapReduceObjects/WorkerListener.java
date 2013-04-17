@@ -1,6 +1,5 @@
 package MapReduceObjects;
 
-import Config.Configuration;
 import Interfaces.InputSplit440;
 
 import java.io.IOException;
