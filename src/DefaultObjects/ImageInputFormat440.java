@@ -71,8 +71,6 @@ private Configuration config;
 			}
 		}
 		
-		System.out.println("Done writing to file!");
-		
 		try {
 			os.close();
 		} catch (IOException e) {

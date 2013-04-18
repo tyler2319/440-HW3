@@ -55,7 +55,6 @@ public class HeartbeatChecker {
 					if (ois == null) {
 						ois = new ObjectInputStream(sock.getInputStream());
 					}
-					System.out.println("Waiting for heartbeat.");
 					oos.writeObject("Still alive?");
 					sock.setSoTimeout(5000);
 					String response = "";

@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import Config.Configuration;
 
@@ -16,6 +17,7 @@ public class MapReduce440 {
 	private int backlog;
 	private int heartbeatPort;
 	private int heartbeatBacklog;
+	private MapReduceListener mrl = null;
 
 	public MapReduce440(int port, int backlog, int heartbeatPort, int heartbeatBacklog) {
 		this.port = port;
@@ -31,7 +33,7 @@ public class MapReduce440 {
 	public void receiveCommands() throws Exception {
 		String result = "";
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		MapReduceListener mrl = new MapReduceListener(port, backlog, heartbeatPort, heartbeatBacklog);
+		mrl = new MapReduceListener(port, backlog, heartbeatPort, heartbeatBacklog, this);
 		mrl.start();
 		
 		while(isRunning) {
@@ -80,11 +82,15 @@ public class MapReduce440 {
 				e.printStackTrace();
 			}
 		} else if (com.equals("monitor") && words.length == 1) {
-			//MONITOR CODE
+			if (mrl != null) mrl.printJobs();
 		} else if (com.equals("stop") && words.length == 1) {
 			//STOP CODE
 		} else {
 			System.out.println("Command not " + com + " recognized.");
 		}
+	}
+	
+	public void jobFinished(String jobName) {
+		System.out.println("Job " + jobName + " finished.");
 	}
 }

@@ -114,7 +114,6 @@ public class MapWorkCommunicator {
 				}
 			}
 			else if (response.equals("Worker busy.")) {
-				System.out.println("That worker is busy, silly");
 			}
 		} catch (IOException e) {
 			shutDownSelf();

@@ -41,6 +41,8 @@ public class MapWorker {
 			isInputText = true;
 		} else if (input.getClass().equals(DefaultObjects.ImageInputFormat440.class)) {
 			isInputImage = true;
+		} else if (input.getClass().equals(DefaultObjects.TextWordInputFormat440.class)) {
+			isInputText = true;
 		}
 	}
 	

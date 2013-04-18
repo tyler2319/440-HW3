@@ -18,7 +18,9 @@ public class MapReduceListener {
     //boolean that determines whether the main thread should run
     private volatile boolean running;
     
-    private String jobName;
+    private MapReduce440 mapReduceMaster;
+    private int nextJobID = 0;
+    private ArrayList<JobContainer> jobs = new ArrayList<JobContainer>();
     
     //List of connections made to the master ProcessManager
     private ArrayList<SocketContainer> sockets = new ArrayList<SocketContainer>();
@@ -30,14 +32,19 @@ public class MapReduceListener {
     private int heartbeatPort;
     private int heartbeatBacklog;
     
+    private MapReduceListener mrl;
+    
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
     
-    public MapReduceListener(int port, int backlog, int heartbeatPort, int heartbeatBacklog) {
+    public MapReduceListener(int port, int backlog, int heartbeatPort,
+    		int heartbeatBacklog, MapReduce440 mapReduceMaster) {
 		this.port = port;
 		this.backlog = backlog;
 		this.heartbeatPort = heartbeatPort;
 		this.heartbeatBacklog = heartbeatBacklog;
+		mrl = this;
+		this.mapReduceMaster = mapReduceMaster;
 	}
     
     public synchronized void start() throws Exception {
@@ -74,25 +81,22 @@ public class MapReduceListener {
 					} catch (IOException e) { }
 					
 					try {
-						//if (ois == null) ois = new ObjectInputStream(s.getInputStream());
-						//if (oos == null) oos = new ObjectOutputStream(s.getOutputStream());
 						String command = (String) ois.readObject();
 						if (command.equals("master")) {
-							System.out.println("master called on port " + port);
 							String config = (String) ois.readObject();
-							MasterWorker mw = new MasterWorker(config);
-							
+							JobContainer thisJob = new JobContainer(nextJobID);
+							jobs.add(thisJob);
+							nextJobID += 1;
+							MasterWorker mw = new MasterWorker(config, mrl, thisJob);		
 							try {
 								mw.start();
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
 						} else if (command.equals("mapworker")) {
-							System.out.println("Map worker called on port" + port);
 							MapWorker mw = new MapWorker(s, oos, ois, heartbeatPort, heartbeatBacklog);
 							oos.writeObject("okay");
 						} else if (command.equals("reduceworker")) {
-							System.out.println("Reduce worker called on port" + port);
 							ReduceWorker rw = new ReduceWorker(s, oos, ois);
 						}
 						else {
@@ -126,8 +130,24 @@ public class MapReduceListener {
 		thread = null;
 	}
     
-    public void setJobName(String s) {
-    	jobName = s;
+    public void jobFinished(int id) {
+    	for (int i = 0; i < jobs.size(); i++) {
+    		JobContainer curJob = jobs.get(i);
+    		if (curJob.getJobID() == id) {
+    			mapReduceMaster.jobFinished(curJob.getJobName());
+    			jobs.remove(i);
+    			return;
+    		}
+    	}
     }
+    
+	public void printJobs() {
+		for (JobContainer job: jobs) {
+			System.out.println(job.getJobName());
+		}
+		if (jobs.size() == 0) {
+			System.out.println("No jobs running.");
+		}
+	}
 
 }

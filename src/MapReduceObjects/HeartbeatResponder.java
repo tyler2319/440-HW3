@@ -55,7 +55,6 @@ public class HeartbeatResponder {
 						if (oos == null) oos = new ObjectOutputStream(sock.getOutputStream());
 						String command = (String) ois.readObject();
 						if (command.equals("Still alive?")) {
-							System.out.println("Reporting that I'm still alive.");
 							oos.writeObject("Yes");
 						}
 					} catch (IOException e) {

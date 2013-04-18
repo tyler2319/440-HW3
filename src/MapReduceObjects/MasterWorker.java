@@ -38,7 +38,8 @@ public class MasterWorker {
 	private int nextOpenMapIndex = 0;
 	private int nextOpenReduceIndex = 0;
 	
-	//private MapReduceListener mrl;
+	private MapReduceListener mrl;
+	private JobContainer job;
 	
 	ScheduledExecutorService workerCheck = Executors.newSingleThreadScheduledExecutor();
 	
@@ -46,8 +47,10 @@ public class MasterWorker {
 	
 	private Thread thread;
 	
-	public MasterWorker(String configPath) {
+	public MasterWorker(String configPath, MapReduceListener mrl, JobContainer job) {
 		this.configPath = configPath;
+		this.mrl = mrl;
+		this.job = job;
 	}
 	
 	public synchronized void start() throws Exception {
@@ -64,7 +67,7 @@ public class MasterWorker {
 			public void run() {
 				JobRunner440 jr = new JobRunner440(configPath);
 				config = jr.getConfig();
-				//mrl.setJobName(config.getJobName());
+				job.setJobName(config.getJobName());
 				InputSplit440[] splits = jr.computeSplits();
 				for (int i = 0; i < splits.length; i++) {
 					unperformedMaps.add(new InputTracker(splits[i]));
@@ -81,12 +84,24 @@ public class MasterWorker {
 				workerCheck.shutdown();
 				initReduce();
 				performReduceWork();
-				//mrl.jobFinished()
+				mrl.jobFinished(job.getJobID());
 			}
 		});
 
 		thread.start();
 	}
+	
+    /** stop()
+     * 
+     * Stops the process of listening for requests
+     */
+    public synchronized void stop() {
+		if (thread == null) {
+			return;
+		}
+		thread = null;
+	}
+    
 	
 	@SuppressWarnings("unchecked")
 	private void initReduce() {
@@ -120,7 +135,6 @@ public class MasterWorker {
 		try {
 			outWriter = Files.newBufferedWriter(Paths.get(intermediateFilepath), Charset.defaultCharset());
 		    for (String path : completedMapPaths) {
-		    	System.out.println("path: " + path);
 		    	BufferedReader br = null;
 				br = Files.newBufferedReader(Paths.get(path), Charset.defaultCharset());
 				String curLine;
@@ -174,7 +188,6 @@ public class MasterWorker {
 				reduceWorkIndex += 1;
 			}
 		}
-		System.out.println("Reduce work all done!");
 	}
 	
 	private void performMapWork() {
@@ -196,7 +209,6 @@ public class MasterWorker {
 				}
 			}
 		}
-		System.out.println("Map work all done!");
 		for (MapWorkCommunicator mwc: allMapWorkers) {
 			if (mwc != null) mwc.closeSocket();
 		}
@@ -256,16 +268,12 @@ public class MasterWorker {
 				oos.writeObject("mapworker");
 				String response = (String) ois.readObject();
 				if (response.equals("okay")) {
-					System.out.println("Okay recieved from id " + i);
 					heartbeatSock = new Socket(curWorkerHost, curHeartbeatPort);
 					MapWorkCommunicator mwp = new MapWorkCommunicator(connection, oos, ois, heartbeatSock, this, i);
 					allMapWorkers[i] = mwp;
 					numMapWorkers += 1;
 					avaliableMapWorkers.push(mwp);
 				} 
-				else {
-					System.out.println("uh-oh...");
-				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
@@ -275,10 +283,8 @@ public class MasterWorker {
 	}
 	
 	public void jobFinished(String path, int indexOfFinishedWorker) {
-		System.out.println("Job finished.");
 		allMapWorkers[indexOfFinishedWorker].stop();
 		if (path.equals("Error")) {
-			System.out.println("Error on the job!");
 			MapWorkCommunicator failedWorker = allMapWorkers[indexOfFinishedWorker];
 			InputTracker input = failedWorker.getCurrentWork();
 			input.addFailedWorker(failedWorker);
@@ -296,7 +302,6 @@ public class MasterWorker {
 	}
 	
 	public void reduceFinished(String path, int indexOfFinishedWorker) {
-		System.out.println("Reduce finished");
 		allReduceWorkers[indexOfFinishedWorker].stop();
 		completedReducePaths[nextOpenReduceIndex] = path;
 		nextOpenReduceIndex += 1;
@@ -308,7 +313,6 @@ public class MasterWorker {
 			InputTracker curSplit = sentOutMapWork[i];
 			if (curSplit != null) {
 				boolean stillAlive = allMapWorkers[i].checkIfAlive();
-				System.out.println("Still alive index " + i + "? " + stillAlive);
 				if (!stillAlive) {
 					shutDownMapWorker(i);
 				}
@@ -317,7 +321,6 @@ public class MasterWorker {
 	}
 	
 	public void shutDownMapWorker(int index) {
-		System.out.println("Shut down index " + index);
 		if (allMapWorkers[index] != null) {
 			numMapWorkers -= 1;
 			InputTracker failedWork = allMapWorkers[index].getCurrentWork();

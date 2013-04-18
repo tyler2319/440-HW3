@@ -26,7 +26,7 @@ public class BaseballConfig implements Configuration{
 	}
 	
 	public String[] getWorkerLocations() {
-		String[] locations = {"localhost:8889:8880", "localhost:8887:8881"};
+		String[] locations = {"localhost:8889:8881", "localhost:8887:8880"};
 		return locations;
 	}
 
@@ -50,7 +50,7 @@ public class BaseballConfig implements Configuration{
 	
 	@SuppressWarnings("rawtypes")
 	public Class<? extends InputFormat440> getInputFormat() {
-		return DefaultObjects.TextInputFormat440.class;
+		return DefaultObjects.TextWordInputFormat440.class;
 	}
 
 	public Class<?> getOutputKeyClass() {
