@@ -82,7 +82,7 @@ public class MapReduce440 {
 		} else if (com.equals("monitor") && words.length == 1) {
 			//MONITOR CODE
 		} else if (com.equals("stop") && words.length == 1) {
-			//STOP CODE
+		   isRunning = false;
 		} else {
 			System.out.println("Command not " + com + " recognized.");
 		}
