@@ -84,7 +84,8 @@ public class MapReduce440 {
 		} else if (com.equals("monitor") && words.length == 1) {
 			if (mrl != null) mrl.printJobs();
 		} else if (com.equals("stop") && words.length == 1) {
-			//STOP CODE
+		   isRunning = false;
+		   System.exit(0);
 		} else {
 			System.out.println("Command not " + com + " recognized.");
 		}
