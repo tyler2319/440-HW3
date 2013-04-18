@@ -20,9 +20,11 @@ public class ReduceListener {
 		private ObjectOutputStream oos;
 		private ObjectInputStream ois;
 		   
-		public ReduceListener(Socket sock, ReduceWorker worker) {
+		public ReduceListener(Socket sock, ReduceWorker worker, ObjectOutputStream oos, ObjectInputStream ois) {
 			this.sock = sock;
 			this.worker = worker;
+			this.oos = oos;
+			this.ois = ois;
 		}
 		
 	    public synchronized void start() throws Exception {

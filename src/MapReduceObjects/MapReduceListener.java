@@ -18,6 +18,8 @@ public class MapReduceListener {
     //boolean that determines whether the main thread should run
     private volatile boolean running;
     
+    private String jobName;
+    
     //List of connections made to the master ProcessManager
     private ArrayList<SocketContainer> sockets = new ArrayList<SocketContainer>();
     
@@ -91,7 +93,7 @@ public class MapReduceListener {
 							oos.writeObject("okay");
 						} else if (command.equals("reduceworker")) {
 							System.out.println("Reduce worker called on port" + port);
-							ReduceWorker rw = new ReduceWorker(s);
+							ReduceWorker rw = new ReduceWorker(s, oos, ois);
 						}
 						else {
 							throw new Exception("Invalid command.");
@@ -123,5 +125,9 @@ public class MapReduceListener {
 		}
 		thread = null;
 	}
+    
+    public void setJobName(String s) {
+    	jobName = s;
+    }
 
 }

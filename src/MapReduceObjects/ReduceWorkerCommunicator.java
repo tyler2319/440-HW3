@@ -23,10 +23,12 @@ public class ReduceWorkerCommunicator {
     private ObjectOutputStream oos;
     private ObjectInputStream ois;
 	
-	public ReduceWorkerCommunicator(Socket sock, MasterWorker master, int id) {
+	public ReduceWorkerCommunicator(Socket sock, ObjectOutputStream oos, ObjectInputStream ois, MasterWorker master, int id) {
 		this.sock = sock;
 		this.master = master;
 		this.id = id;
+		this.oos = oos;
+		this.ois = ois;
 	}
 	
 	public synchronized void start() throws Exception {

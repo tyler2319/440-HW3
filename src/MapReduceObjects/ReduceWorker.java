@@ -2,6 +2,7 @@ package MapReduceObjects;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -24,8 +25,8 @@ public class ReduceWorker {
 	
 	private Thread thread;
 
-	public ReduceWorker(Socket sock) {
-		listener = new ReduceListener(sock, this);
+	public ReduceWorker(Socket sock, ObjectOutputStream oos, ObjectInputStream ois ) {
+		listener = new ReduceListener(sock, this, oos, ois);
 		
 		try {
 			listener.start();

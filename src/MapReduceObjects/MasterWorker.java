@@ -38,6 +38,8 @@ public class MasterWorker {
 	private int nextOpenMapIndex = 0;
 	private int nextOpenReduceIndex = 0;
 	
+	//private MapReduceListener mrl;
+	
 	ScheduledExecutorService workerCheck = Executors.newSingleThreadScheduledExecutor();
 	
 	private ArrayList<Integer>[] recordsSplitToReduceWorkers;
@@ -62,6 +64,7 @@ public class MasterWorker {
 			public void run() {
 				JobRunner440 jr = new JobRunner440(configPath);
 				config = jr.getConfig();
+				//mrl.setJobName(config.getJobName());
 				InputSplit440[] splits = jr.computeSplits();
 				for (int i = 0; i < splits.length; i++) {
 					unperformedMaps.add(new InputTracker(splits[i]));
@@ -78,6 +81,7 @@ public class MasterWorker {
 				workerCheck.shutdown();
 				initReduce();
 				performReduceWork();
+				//mrl.jobFinished()
 			}
 		});
 
@@ -214,13 +218,13 @@ public class MasterWorker {
 			int curWorkerPort = Integer.parseInt(curWorkerLoc[1]);
 			Socket connection;
 			ObjectOutputStream oos = null;
-			
+			ObjectInputStream ois = null;
 			try {
 				connection = new Socket(curWorkerHost, curWorkerPort);
 				oos = new ObjectOutputStream(connection.getOutputStream());
-				//ois = new ObjectInputStream(connection.getInputStream());
+				ois = new ObjectInputStream(connection.getInputStream());
 				oos.writeObject("reduceworker");
-				ReduceWorkerCommunicator rwp = new ReduceWorkerCommunicator(connection, this, i);
+				ReduceWorkerCommunicator rwp = new ReduceWorkerCommunicator(connection, oos, ois, this, i);
 				allReduceWorkers[i] = rwp;
 				avaliableReduceWorkers.push(rwp);
 			} catch (IOException e) {
